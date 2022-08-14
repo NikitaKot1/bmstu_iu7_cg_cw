@@ -1,7 +1,11 @@
 package mapping
 
-import mapping.SimpleObject
+import mapping.objects.SimpleObject
 
 class Zbuffer {
-    private val objs = Array<SimpleObject>
+    private val objs = emptyArray<SimpleObject>()
+
+    public fun drawScene (){
+
+    }
 }

@@ -1,4 +1,0 @@
-package mapping
-
-class SimpleObject {
-}
