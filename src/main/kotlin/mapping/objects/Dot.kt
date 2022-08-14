@@ -1,6 +1,6 @@
 package mapping.objects
 
-data class Dot (val x: Double, val y: Double, val z: Double) {
+data class Dot (private val x: Double, private val y: Double, private val z: Double) {
     public var xi: Double = 0.0
     public var yi: Double = 0.0
     public var zi: Double = 0.0

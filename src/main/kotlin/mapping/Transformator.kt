@@ -3,7 +3,7 @@ package mapping
 import mapping.objects.SimpleObject
 import mapping.objects.Dot
 
-class Transformator {
+object Transformator {
     public fun transform (obj: SimpleObject, matr: RotateMatrix): SimpleObject {
         val newObj: SimpleObject = obj
         for (ifacet in 0..newObj.facets.size){
