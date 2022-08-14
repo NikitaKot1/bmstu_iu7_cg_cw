@@ -9,7 +9,6 @@ import tornadofx.*
 import kotlin.math.abs
 
 class MainView : View("MainWindow") {
-
     private val image = Image("/drawimage.jpg")
     private val wimage = WritableImage(image.pixelReader, image.width.toInt(), image.height.toInt())
 

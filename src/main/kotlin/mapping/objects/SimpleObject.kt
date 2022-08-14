@@ -1,5 +1,5 @@
 package mapping.objects
 
 class SimpleObject {
-    private val facets = emptyArray<Facet>()
+    public var facets = emptyArray<Facet>()
 }

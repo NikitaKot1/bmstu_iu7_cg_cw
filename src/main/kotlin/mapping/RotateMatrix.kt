@@ -1,4 +1,6 @@
-package mapping.objects
+package mapping
+
+import mapping.objects.Dot
 
 class RotateMatrix () {
     //public val matrix :Array<IntArray> =
