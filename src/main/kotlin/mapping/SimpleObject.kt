@@ -1,0 +1,4 @@
+package mapping
+
+class SimpleObject {
+}
