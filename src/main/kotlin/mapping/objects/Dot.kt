@@ -1,7 +1,12 @@
 package mapping.objects
 
-open class Dot {
-    public val x: Int = 0
-    public val y: Int = 0
-    public val z: Int = 0
+data class Dot (val x: Double, val y: Double, val z: Double) {
+    public var xi: Double = 0.0
+    public var yi: Double = 0.0
+    public var zi: Double = 0.0
+    init {
+        xi = x
+        yi = y
+        zi = z
+    }
 }
