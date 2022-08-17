@@ -6,33 +6,7 @@ data class Facet (val dotAr: Array<Dot>, val edgeAr: Array<Edge>, val startColor
     public var dots = dotAr
     private val edges = edgeAr
     public var equation = arrayOfNulls<Double>(4)
-    public var color: Color = Color.rgb(0, 0, 0)
-
-    init {
-        color = startColor
-        //calculate facet's equation
-        val x0: Double = dots[0].xi
-        val y0: Double = dots[0].yi
-        val z0: Double = dots[0].zi
-
-        val x1: Double = dots[1].xi
-        val y1: Double = dots[1].yi
-        val z1: Double = dots[1].zi
-
-        val x2: Double = dots[2].xi
-        val y2: Double = dots[2].yi
-        val z2: Double = dots[2].zi
-
-        val a: Double = (y1 - y0) * (z2 - z0) - (y2 - y0) * (z1 - z0)
-        val b: Double = (z1 - z0) * (x2 - x0) - (z2 - z0) * (x1 - x0)
-        val c: Double = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0)
-        val d: Double = -1 * (a * x0 + b * y0 + c * z0)
-
-        equation[0] = a
-        equation[1] = b
-        equation[2] = c
-        equation[3] = d
-    }
+    public var color: Color = startColor
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

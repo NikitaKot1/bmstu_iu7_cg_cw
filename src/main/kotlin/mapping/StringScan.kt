@@ -2,11 +2,17 @@ package mapping
 
 import javafx.scene.image.Image
 import mapping.objects.SimpleObject
+import mapping.objects.ZBufferString
 
-class StringScan (obj: SimpleObject, matr: RotateMatrix) {
+class StringScan (val y: Int) {
     private val image = Image("/drawimage.jpg")
     public val width = image.width
-    public val newObj: SimpleObject = Transformator.transform(obj, matr)
-    public val map = ListOfFacet.createMap(obj)
+
+    public val stringBuffer = ZBufferString(width.toInt())
+    init {
+        stringBuffer.fill()
+    }
+
+
         
 }
