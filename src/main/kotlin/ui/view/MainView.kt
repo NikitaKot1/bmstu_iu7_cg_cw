@@ -5,6 +5,8 @@ import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.scene.image.WritableImage
+import mapping.RotateMatrix
+import mapping.Zbuffer
 import tornadofx.*
 import kotlin.math.abs
 
@@ -14,7 +16,9 @@ class MainView : View("MainWindow") {
 
     override val root = hbox {
         imageview(wimage).apply {
-            fillGood(wimage)
+            //fillGood(wimage)
+            val matr = RotateMatrix()
+            //Zbuffer(obj, matr).drawScene()
         }
         hboxConstraints {
             prefWidth = 400.0
