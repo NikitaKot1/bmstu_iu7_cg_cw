@@ -2,7 +2,8 @@ package mapping.objects
 
 import javafx.scene.paint.Color
 
-data class Facet (val dotAr: Array<Dot>, val edgeAr: Array<Edge>, val startColor: Color = Color.rgb(0, 0, 0)) {
+data class Facet(val dotAr: Array<Dot>, val edgeAr: Array<Edge>, val startColor: Color = Color.rgb(0, 0, 0)) {
+
     public var dots = dotAr
     private val edges = edgeAr
     public var equation = arrayOfNulls<Double>(4)

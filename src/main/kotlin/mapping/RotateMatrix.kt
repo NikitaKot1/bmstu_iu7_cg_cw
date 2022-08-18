@@ -20,9 +20,9 @@ class RotateMatrix () {
     }
 
     public fun scale (scaleParam: Dot) {
-        matrix[0][0] += scaleParam.xi
-        matrix[1][1] += scaleParam.yi
-        matrix[2][2] += scaleParam.zi
+        matrix[0][0] *= scaleParam.xi
+        matrix[1][1] *= scaleParam.yi
+        matrix[2][2] *= scaleParam.zi
     }
 
     public fun rotate (rotateParam: Dot) {

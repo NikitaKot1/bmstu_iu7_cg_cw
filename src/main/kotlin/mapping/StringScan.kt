@@ -13,7 +13,7 @@ class StringScan (val y: Int, val arr: Array<ScanFacetInf>) {
     }
 
     public fun calcColorBuffer () : ZBufferString{
-        for (x in 0..width.toInt()) {
+        for (x in 0 until width.toInt()) {
             for (area in arr) {
                 val z = area.getZ(x, y)
                 if (area.area.contains(x.toDouble(), y.toDouble()) && (stringBuffer.zbuffer[x]!! > z)) {

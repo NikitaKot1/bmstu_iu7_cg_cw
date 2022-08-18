@@ -1,14 +1,12 @@
 package ui.view
 
-import javafx.beans.property.SimpleStringProperty
-import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.scene.image.WritableImage
 import mapping.RotateMatrix
 import mapping.Zbuffer
+import mapping.objects.examples.Cube
 import tornadofx.*
-import kotlin.math.abs
 
 class MainView : View("MainWindow") {
     private val image = Image("/drawimage.jpg")
@@ -18,7 +16,8 @@ class MainView : View("MainWindow") {
         imageview(wimage).apply {
             //fillGood(wimage)
             val matr = RotateMatrix()
-            //Zbuffer(obj, matr).drawScene()
+            val obj = Cube()
+            Zbuffer(obj, matr, wimage).drawScene()
         }
         hboxConstraints {
             prefWidth = 400.0

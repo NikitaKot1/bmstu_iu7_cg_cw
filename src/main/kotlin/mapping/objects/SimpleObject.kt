@@ -1,5 +1,5 @@
 package mapping.objects
 
-class SimpleObject {
+open class SimpleObject {
     public var facets = emptyArray<Facet>()
 }

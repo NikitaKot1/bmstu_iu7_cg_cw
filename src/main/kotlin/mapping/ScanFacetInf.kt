@@ -12,7 +12,7 @@ class ScanFacetInf (val facet: Facet){
     public val path = GeneralPath()
     init {
         path.moveTo(facet.dots[0].xi, facet.dots[0].yi)
-        for (i in 0..facet.dots.size) {
+        for (i in 0 until facet.dots.size) {
             path.lineTo(facet.dots[i].xi, facet.dots[i].yi)
         }
         path.closePath()
