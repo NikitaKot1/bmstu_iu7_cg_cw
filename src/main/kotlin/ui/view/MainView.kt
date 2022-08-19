@@ -3,7 +3,7 @@ package ui.view
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.scene.image.WritableImage
-import mapping.RotateMatrix
+import mapping.TransformMatrix
 import mapping.Zbuffer
 import mapping.objects.examples.Cube
 import tornadofx.*
@@ -15,7 +15,7 @@ class MainView : View("MainWindow") {
     override val root = hbox {
         imageview(wimage).apply {
             //fillGood(wimage)
-            val matr = RotateMatrix()
+            val matr = TransformMatrix()
             val obj = Cube()
             Zbuffer(obj, matr, wimage).drawScene()
         }

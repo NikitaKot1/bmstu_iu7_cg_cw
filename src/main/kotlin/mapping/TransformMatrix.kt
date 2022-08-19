@@ -2,7 +2,7 @@ package mapping
 
 import mapping.objects.Dot
 
-class RotateMatrix () {
+class TransformMatrix () {
     //public val matrix :Array<IntArray> =
     public val matrix :Array<DoubleArray> = Array(4) {DoubleArray(4) {0.0} }
 

@@ -4,7 +4,7 @@ import mapping.objects.SimpleObject
 import mapping.objects.Dot
 
 object Transformator {
-    public fun transform (obj: SimpleObject, matr: RotateMatrix): SimpleObject {
+    public fun transform (obj: SimpleObject, matr: TransformMatrix): SimpleObject {
         val newObj: SimpleObject = obj
         for (ifacet in 0 until newObj.facets.size){
             val facet = newObj.facets[ifacet]

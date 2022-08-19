@@ -1,14 +1,10 @@
 package mapping
 
-import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import mapping.objects.SimpleObject
 
-class Zbuffer (obj: SimpleObject, matr: RotateMatrix, image: WritableImage) {
-    //private val objs = emptyArray<SimpleObject>()
-//    private val image = Image("/drawimage.jpg")
-//    private val wimage = WritableImage(image.pixelReader, image.width.toInt(), image.height.toInt())
-    var wimage = image
+class Zbuffer (obj: SimpleObject, matr: TransformMatrix, image: WritableImage) {
+    public var wimage = image
     public val newObj: SimpleObject = Transformator.transform(obj, matr)
     public val map = ListOfFacet.createMap(newObj)
     public var arr = emptyArray<ScanFacetInf>()
@@ -23,6 +19,12 @@ class Zbuffer (obj: SimpleObject, matr: RotateMatrix, image: WritableImage) {
             for (x in 0 until wimage.width.toInt()) {
                 pW.setColor(x, y, cbuffer[x])
             }
+//            for (i in arr.indices) {
+//                arr[i].dy--
+//                if (arr[i].dy == 0)
+//                    arr.drop(i)
+//            }
+
         }
     }
 }
