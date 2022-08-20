@@ -5,6 +5,7 @@ import javafx.scene.paint.Color
 import javafx.scene.image.WritableImage
 import mapping.transform.TransformMatrix
 import mapping.Zbuffer
+import mapping.objects.Dot
 import mapping.objects.examples.Cube
 import tornadofx.*
 
@@ -16,12 +17,15 @@ class MainView : View("MainWindow") {
         imageview(wimage).apply {
             //fillGood(wimage)
             val matr = TransformMatrix()
+            matr.rotate(Dot(.0, 90.0, 1.0))
+            matr.move(Dot(100.0, 100.0, .0))
+            //matr.scale(Dot(1.0, 2.0, 1.0))
             val obj = Cube()
             Zbuffer(obj, matr, wimage).drawScene()
         }
         hboxConstraints {
-            prefWidth = 400.0
-            prefHeight = 400.0
+            prefWidth = 1000.0
+            prefHeight = 1000.0
         }
     }
 

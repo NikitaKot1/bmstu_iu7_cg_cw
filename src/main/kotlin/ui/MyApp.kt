@@ -10,7 +10,7 @@ class MyApp: App(MainView::class, Styles::class) {
     override fun start(stage: Stage) {
         with(stage) {
             width = 1200.0
-            height = 600.0
+            height = 1000.0
         }
         super.start(stage)
     }

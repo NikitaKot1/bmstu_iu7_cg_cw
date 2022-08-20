@@ -1,7 +1,7 @@
 package mapping.transform
 
 open class Matrix {
-    public val matrix : Array<DoubleArray> = Array(4) {DoubleArray(4) {0.0} }
+    public var matrix : Array<DoubleArray> = Array(4) {DoubleArray(4) {0.0} }
 
     init {
         matrix[0][0] = 1.0
