@@ -5,7 +5,7 @@ import mapping.objects.Dot
 
 object Transformator {
     public fun transform (obj: SimpleObject, matr: TransformMatrix): SimpleObject {
-        val newObj: SimpleObject = obj
+        val newObj: SimpleObject = obj.clone()
         for (ifacet in 0 until newObj.facets.size){
             val facet = newObj.facets[ifacet]
             for (idot in 0 until facet.dotAr.size) {

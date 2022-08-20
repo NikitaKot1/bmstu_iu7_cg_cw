@@ -9,6 +9,19 @@ data class Facet(val dotAr: Array<Dot>, val edgeAr: Array<Edge>, val startColor:
     public var equation = arrayOfNulls<Double>(4)
     public var color: Color = startColor
 
+    public fun clone(): Facet {
+        var newDots = emptyArray<Dot>()
+        for (d in dots) {
+            newDots += Dot(d.xi, d.yi, d.zi)
+        }
+
+        var newEdges = emptyArray<Edge>()
+        for (d in edges) {
+            newEdges += Edge(d.id_p1, d.id_p2)
+        }
+        return Facet(newDots, newEdges, color)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

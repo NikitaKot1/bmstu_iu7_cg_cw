@@ -59,5 +59,9 @@ class TransformMatrix () : Matrix () {
         devMatrix[1][0] = -sin(rotateParam.zi)
         devMatrix[1][1] = cos(rotateParam.zi)
         matrix = this.mul(devMatrix)
+        devMatrix[0][0] = 1.0
+        devMatrix[0][1] = 0.0
+        devMatrix[1][0] = 0.0
+        devMatrix[1][1] = 1.0
     }
 }
