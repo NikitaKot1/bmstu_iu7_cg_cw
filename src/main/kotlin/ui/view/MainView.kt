@@ -3,7 +3,7 @@ package ui.view
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.scene.image.WritableImage
-import mapping.TransformMatrix
+import mapping.transform.TransformMatrix
 import mapping.Zbuffer
 import mapping.objects.examples.Cube
 import tornadofx.*

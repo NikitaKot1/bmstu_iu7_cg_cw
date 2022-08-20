@@ -1,4 +1,4 @@
-package mapping
+package mapping.transform
 
 import mapping.objects.SimpleObject
 import mapping.objects.Dot

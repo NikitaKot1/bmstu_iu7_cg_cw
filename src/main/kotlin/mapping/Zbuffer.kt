@@ -2,6 +2,8 @@ package mapping
 
 import javafx.scene.image.WritableImage
 import mapping.objects.SimpleObject
+import mapping.transform.TransformMatrix
+import mapping.transform.Transformator
 
 class Zbuffer (obj: SimpleObject, matr: TransformMatrix, image: WritableImage) {
     public var wimage = image
