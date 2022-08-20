@@ -1,6 +1,7 @@
 package mapping.objects
 
 import javafx.scene.paint.Color
+import mapping.defines.BackgroundColor
 
 class ZBufferString (val width: Int){
     var zbuffer = arrayOfNulls<Double>(width)
@@ -9,6 +10,6 @@ class ZBufferString (val width: Int){
 
     public fun fill() {
         zbuffer.fill(-Double.MAX_VALUE)
-        colorbuffer.fill(Color.AQUAMARINE)
+        colorbuffer.fill(BackgroundColor.color)
     }
 }

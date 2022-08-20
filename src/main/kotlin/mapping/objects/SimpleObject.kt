@@ -1,5 +1,5 @@
 package mapping.objects
 
 open class SimpleObject {
-    public var facets = emptyArray<Facet>()
+    public var facets = mutableListOf<Facet>()
 }

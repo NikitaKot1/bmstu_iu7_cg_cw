@@ -4,7 +4,7 @@ import javafx.scene.image.Image
 import mapping.defines.StrokeColor
 import mapping.objects.ZBufferString
 
-class StringScan(val y: Int, val arr: Array<ScanFacetInf>, val prevZBuff: Array<Array<Double>?>) {
+class StringScan(val y: Int, val arr: List<ScanFacetInf>, val prevZBuff: Array<Array<Double>?>) {
     private val image = Image("/drawimage.jpg")
     public val width = image.width
     public val stringBuffer = ZBufferString(width.toInt())
@@ -60,14 +60,14 @@ class StringScan(val y: Int, val arr: Array<ScanFacetInf>, val prevZBuff: Array<
             }
             empY = false
         }
-        else if (!empY) {
-            for (x in 0 until width.toInt()) {
-                if (!stringBuffer.eqbuffer.contentEquals(arrayOf(.0, .0, .0, .0))) {
-                    stringBuffer.colorbuffer[x] = StrokeColor.color
-                }
-                //empY = false
-            }
-        }
+//        else if (!empY) {
+//            for (x in 0 until width.toInt()) {
+//                if (!stringBuffer.eqbuffer.contentEquals(arrayOf(.0, .0, .0, .0))) {
+//                    stringBuffer.colorbuffer[x] = StrokeColor.color
+//                }
+//                //empY = false
+//            }
+//        }
         return stringBuffer
     }
 }

@@ -7,7 +7,7 @@ class Zbuffer (obj: SimpleObject, matr: TransformMatrix, image: WritableImage) {
     public var wimage = image
     public val newObj: SimpleObject = Transformator.transform(obj, matr)
     public val map = ListOfFacet.createMap(newObj)
-    public var arr = emptyArray<ScanFacetInf>()
+    public var arr = mutableListOf<ScanFacetInf>()
     var eqbuffer = arrayOfNulls<Array<Double>>(wimage.width.toInt())
     init {
         for (i in eqbuffer.indices) {
@@ -28,11 +28,13 @@ class Zbuffer (obj: SimpleObject, matr: TransformMatrix, image: WritableImage) {
             for (x in 0 until wimage.width.toInt()) {
                 pW.setColor(x, y, cbuffer[x])
             }
-//            for (i in arr.indices) {
-//                arr[i].dy--
-//                if (arr[i].dy == 0)
-//                    arr.drop(i)
-//            }
+            for (i in arr.size - 1 downTo 0) {
+                arr[i].dy--
+                if (arr[i].dy == 0) {
+                    arr.removeAt(i)
+
+                }
+            }
 
         }
     }
