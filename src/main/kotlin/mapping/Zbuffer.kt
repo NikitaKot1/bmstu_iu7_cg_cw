@@ -1,9 +1,9 @@
 package mapping
 
 import javafx.scene.image.WritableImage
+import mapping.math.matrixes.MoveMatrix
 import mapping.objects.SimpleObject
-import mapping.transform.TransformMatrix
-import mapping.transform.Transformator
+import mapping.math.matrixes.TransformMatrix
 
 class Zbuffer (obj: SimpleObject, matr: TransformMatrix, image: WritableImage) {
     public var wimage = image
@@ -39,5 +39,6 @@ class Zbuffer (obj: SimpleObject, matr: TransformMatrix, image: WritableImage) {
             }
 
         }
+        val ma = MoveMatrix(.0, .0, .0)
     }
 }

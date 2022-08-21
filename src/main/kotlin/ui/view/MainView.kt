@@ -1,9 +1,8 @@
 package ui.view
 
 import javafx.scene.image.Image
-import javafx.scene.paint.Color
 import javafx.scene.image.WritableImage
-import mapping.transform.TransformMatrix
+import mapping.math.matrixes.TransformMatrix
 import mapping.Zbuffer
 import mapping.objects.Dot
 import mapping.objects.examples.Cube
