@@ -45,11 +45,6 @@ class ScanFacetInf (val facet: Facet){
         val y2: Double = facet.dots[2].yi
         val z2: Double = facet.dots[2].zi
 
-//        val a: Double = (y1 - y0) * (z2 - z0) - (y2 - y0) * (z1 - z0)
-//        val b: Double = (z1 - z0) * (x2 - x0) - (z2 - z0) * (x1 - x0)
-//        val c: Double = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0)
-//        val d: Double = -1 * (a * x0 + b * y0 + c * z0)
-
         val a: Double = y0*(z1-z2) + y1*(z2-z0) + y2*(z0-z1)
         val b: Double = z0*(x1-x2) + z1*(x2-x0) + z2*(x0-x1)
         val c: Double = x0*(y1-y2) + x1*(y2-y0) + x2*(y1-y2)
