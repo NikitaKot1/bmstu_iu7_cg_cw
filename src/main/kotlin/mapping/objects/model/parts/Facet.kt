@@ -1,4 +1,4 @@
-package mapping.objects
+package mapping.objects.model.parts
 
 import javafx.scene.paint.Color
 

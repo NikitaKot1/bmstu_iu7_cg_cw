@@ -4,7 +4,7 @@ import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import mapping.math.matrixes.TransformMatrix
 import mapping.Zbuffer
-import mapping.objects.Dot
+import mapping.objects.model.parts.Dot
 import mapping.objects.examples.Cube
 import tornadofx.*
 

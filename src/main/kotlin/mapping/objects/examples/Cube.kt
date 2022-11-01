@@ -1,9 +1,9 @@
 package mapping.objects.examples
 
 import javafx.scene.paint.Color
-import mapping.objects.Dot
-import mapping.objects.Edge
-import mapping.objects.Facet
+import mapping.objects.model.parts.Dot
+import mapping.objects.model.parts.Edge
+import mapping.objects.model.parts.Facet
 import mapping.objects.SimpleObject
 
 class Cube : SimpleObject() {

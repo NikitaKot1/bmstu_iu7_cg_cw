@@ -1,6 +1,6 @@
 package mapping
 
-import mapping.objects.Facet
+import mapping.objects.model.parts.Facet
 import java.awt.geom.Area
 import java.awt.geom.GeneralPath
 import kotlin.math.round
