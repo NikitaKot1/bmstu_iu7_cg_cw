@@ -13,6 +13,11 @@ class Render (image: WritableImage) {
     val zBuffer = Array(wimage.height.toInt()) {DoubleArray(wimage.width.toInt()) {Double.MIN_VALUE} }
     val pw = wimage.pixelWriter
 
+    private fun initBuffers() {
+        for (k in zBuffer)
+            k.fill(Double.MIN_VALUE)
+    }
+
     private fun processPixel (p: Vector3, c: Color) {
         val x = p.x.toInt()
         val y = p.y.toInt()
@@ -39,7 +44,6 @@ class Render (image: WritableImage) {
     
     private fun calculateFacetColor(facet: Facet, camera: Camera, screenCenter: Vector2D) : Color {
         val n = facet.getNormal(camera, screenCenter)
-        val k = 130.0
         val col = facet.color
         val fraction = n.z
         //TODO: уточнить, не будет ли слишком сильно затемняться
@@ -84,7 +88,20 @@ class Render (image: WritableImage) {
         processFacet(screenFacets, frameRect, faceColor)
     }
 
-    fun renderScene () {
-        //TODO: рендер сцены -- processLine
+    private fun processLine(p1: Vector3, p2: Vector3, color: Color) {
+        //TODO: ну мб и можно сделать
+    }
+
+    fun renderScene (scene: Scene) {
+        initBuffers()
+
+        for (model in scene.models) {
+            //Грани
+            for (facet in model.poligons.facets)
+                renderFacet(facet, scene, Vector2D(wimage.width / 2, wimage.height / 2))
+
+            //TODO: ребра
+            //TODO: вершины
+        }
     }
 }

@@ -29,9 +29,9 @@ class PartsOfModel {
         move(center.getNewPosition())
     }
 
-    fun findArithCenter() : Vector3 {
+    fun findArithCenter() : Vertex {
         if (vertices.size == 0)
-            return Vector3(.0, .0, .0)
+            return Vertex(Vector3(.0, .0, .0))
         var point = vertices[0].getNewPosition()
         var maxX = point.x
         var minX = maxX
@@ -48,6 +48,6 @@ class PartsOfModel {
             if (point.z > maxZ) maxZ = point.x
             if (point.z < minZ) minZ = point.x
         }
-        return Vector3((maxX + minX) / 2, (maxY + minY) / 2,(maxZ + minZ) / 2)
+        return Vertex(Vector3((maxX + minX) / 2, (maxY + minY) / 2,(maxZ + minZ) / 2))
     }
 }
