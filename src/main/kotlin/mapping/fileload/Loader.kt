@@ -1,6 +1,9 @@
 package mapping.fileload
 
 import mapping.math.Vector3
+import mapping.objects.camera.Camera
+import mapping.scene.Scene
+import mapping.objects.light.Light
 import mapping.objects.model.Model
 import mapping.objects.model.parts.Edge
 import mapping.objects.model.parts.Facet
@@ -9,7 +12,15 @@ import mapping.objects.model.parts.Vertex
 import java.io.File
 
 class Loader (fileName: String){
-    private val scrFile = File(fileName)
+    private var scrFile = File(fileName)
+
+    fun openFile(fileName: String) {
+        scrFile = File(fileName)
+    }
+
+    fun closeFile() {
+
+    }
 
     private fun readPosition(line: String) : Vector3 {
         val spl = line.split(' ')
@@ -55,8 +66,8 @@ class Loader (fileName: String){
         scrFile.useLines { lines -> lines.forEach { lineList.add(it) } }
 
         for (line in lineList) {
-            val key = line[0]
-            if (key == 'o') {
+            val key = line.split(' ')[0]
+            if (key == "o") {
                 if (details != null) {
                     details.edges = edges
                     details.center = details.findArithCenter()
@@ -67,11 +78,11 @@ class Loader (fileName: String){
                 }
                 details = PartsOfModel()
             }
-            else if (key == 'v') {
+            else if (key == "v") {
                 val v = readPosition(line)
                 details?.vertices?.add(Vertex(v))
             }
-            else if (key == 'f') {
+            else if (key == "f") {
                 val vNumbers = readFacetDetails(line)
                 val vertices = mutableListOf<Vertex>()
                 val facetEdges = mutableListOf<Edge>()
@@ -98,5 +109,79 @@ class Loader (fileName: String){
         }
 
         return models
+    }
+
+    fun loadScene() : Scene {
+        val models = mutableListOf<Model>()
+        var details : PartsOfModel? = null
+        var verticesRead = 0
+        val edges = mutableListOf<Edge>()
+        var light : Light? = null
+        var camera : Camera? = null
+
+        val lineList = mutableListOf<String>()
+        scrFile.useLines { lines -> lines.forEach { lineList.add(it) } }
+
+        for (line in lineList) {
+            val key = line.split(' ')[0]
+            if (key == "o") {
+                if (details != null) {
+                    details.edges = edges
+                    details.center = details.findArithCenter()
+                    val m = Model(details)
+                    models += m
+
+                    verticesRead += details.vertices.size
+                }
+                details = PartsOfModel()
+            }
+            else if (key == "v") {
+                val v = readPosition(line)
+                details?.vertices?.add(Vertex(v))
+            }
+            else if (key == "f") {
+                val vNumbers = readFacetDetails(line)
+                val vertices = mutableListOf<Vertex>()
+                val facetEdges = mutableListOf<Edge>()
+
+                for (num in vNumbers) if (details != null) {
+                    vertices += details.vertices[num - verticesRead]
+                }
+                for (i in 0 until vertices.size) {
+                    var e = Edge(vertices[i], vertices[(i+1)%vertices.size])
+                    e = addEdgeToModel(edges, e)
+                    facetEdges += e
+                }
+                val f = Facet(vertices, facetEdges)
+                //TODO: цвет?
+                details?.facets?.plusAssign(f)
+            }
+            else if (key == "ls") {
+                val v = Vertex(readPosition(line))
+                light = Light(v)
+            }
+            else if (key == "cam") {
+                val v = Vertex(readPosition(line))
+                camera = Camera(v)
+            }
+        }
+
+        if (details?.toString().toBoolean()) {
+            details?.edges = edges
+            details?.center = details?.findArithCenter()!!
+            val m = Model(details)
+            models += m
+            verticesRead += details.vertices.size
+        }
+
+        val scene = Scene()
+        scene.models = models
+        if (light != null) {
+            scene.lights = light
+        }
+        if (camera != null) {
+            scene.camera = camera
+        }
+        return scene
     }
 }
