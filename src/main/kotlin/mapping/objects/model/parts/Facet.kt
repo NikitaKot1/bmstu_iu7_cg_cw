@@ -5,7 +5,7 @@ import mapping.math.Vector3
 import mapping.objects.camera.Camera
 import tornadofx.Vector2D
 
-data class Facet(val dotAr: List<Vertex>, val edgeAr: List<Edge>, val startColor: Color = Color.rgb(0, 0, 0)) {
+data class Facet(private val dotAr: List<Vertex>, private val edgeAr: List<Edge>, private val startColor: Color = Color.rgb(0, 0, 0)) {
 
     public var dots = dotAr.toMutableList()
     private val edges = edgeAr.toMutableList()
