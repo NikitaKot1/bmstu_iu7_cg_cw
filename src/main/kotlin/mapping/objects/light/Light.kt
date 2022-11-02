@@ -1,9 +1,9 @@
 package mapping.objects.light
 
-import mapping.math.Vector3
 import mapping.objects.SimpleObject
+import mapping.objects.model.parts.Vertex
 
-class Light (private val v: Vector3) : SimpleObject() {
+class Light (private val v: Vertex) : SimpleObject() {
     var pos = v
-    lateinit var center: Vector3
+    lateinit var center: Vertex
 }

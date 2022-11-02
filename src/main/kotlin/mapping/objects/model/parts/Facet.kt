@@ -1,48 +1,35 @@
 package mapping.objects.model.parts
 
 import javafx.scene.paint.Color
+import mapping.math.Vector3
+import mapping.objects.camera.Camera
+import tornadofx.Vector2D
 
-data class Facet(val dotAr: Array<Dot>, val edgeAr: Array<Edge>, val startColor: Color = Color.rgb(0, 0, 0)) {
+data class Facet(val dotAr: List<Vertex>, val edgeAr: List<Edge>, val startColor: Color = Color.rgb(0, 0, 0)) {
 
-    public var dots = dotAr
-    private val edges = edgeAr
-    public var equation = arrayOfNulls<Double>(4)
+    public var dots = dotAr.toMutableList()
+    private val edges = edgeAr.toMutableList()
     public var color: Color = startColor
 
-    public fun clone(): Facet {
-        var newDots = emptyArray<Dot>()
+    fun clone(): Facet {
+        val newDots = mutableListOf<Vertex>()
         for (d in dots) {
-            newDots += Dot(d.xi, d.yi, d.zi)
+            newDots += Vertex(Vector3(d.position.x, d.position.y, d.position.z))
         }
 
-        var newEdges = emptyArray<Edge>()
-        for (d in edges) {
-            newEdges += Edge(d.id_p1, d.id_p2)
+        val newEdges = mutableListOf<Edge>()
+        for (e in edges) {
+            newEdges += Edge(Vertex(e.id_p1.position), Vertex(e.id_p2.position))
         }
         return Facet(newDots, newEdges, color)
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Facet
-
-        if (!dotAr.contentEquals(other.dotAr)) return false
-        if (!dots.contentEquals(other.dots)) return false
-        if (!edges.contentEquals(other.edges)) return false
-        if (!equation.contentEquals(other.equation)) return false
-        if (color != other.color) return false
-
-        return true
+    fun getNormal(camera: Camera, screenCenter: Vector2D) : Vector3{
+        val u = dots[1].getScreenPos(camera, screenCenter) - dots[0].getScreenPos(camera, screenCenter)
+        val v = dots[2].getScreenPos(camera, screenCenter) - dots[0].getScreenPos(camera, screenCenter)
+        val norm = u * v
+        norm.normalize(1.0)
+        return norm
     }
 
-    override fun hashCode(): Int {
-        var result = dotAr.contentHashCode()
-        result = 31 * result + dots.contentHashCode()
-        result = 31 * result + edges.contentHashCode()
-        result = 31 * result + equation.contentHashCode()
-        result = 31 * result + color.hashCode()
-        return result
-    }
 }

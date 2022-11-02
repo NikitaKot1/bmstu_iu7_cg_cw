@@ -1,5 +1,6 @@
-package mapping.math
+package mapping.objects.model.parts
 
+import mapping.math.Vector3
 import mapping.math.matrixes.Matrix
 import mapping.math.matrixes.MoveMatrix
 import mapping.math.matrixes.RotateOXMatrix

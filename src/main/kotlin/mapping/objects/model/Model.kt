@@ -1,10 +1,13 @@
 package mapping.objects.model
 
-import mapping.objects.model.parts.Dot
-import mapping.objects.model.parts.Facet
+import mapping.math.Vector3
+import mapping.objects.model.parts.PartsOfModel
 
-class Model (){
-    public var center = Dot(.0, .0, .0)
-    public var facets = mutableListOf<Facet>()
-    public var norms = mutableListOf<Facet>()
+
+class Model (parts: PartsOfModel) {
+    val poligons = parts
+
+    fun transform(movep: Vector3, scalep: Vector3, rotatep: Vector3) {
+        poligons.transform(movep, scalep, rotatep)
+    }
 }

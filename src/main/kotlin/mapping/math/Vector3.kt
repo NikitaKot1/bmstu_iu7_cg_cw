@@ -17,8 +17,15 @@ class Vector3 (private val xi: Double, private val yi: Double, private val zi: D
         return Vector3(x - b.x, y - b.y, z - b.z)
     }
 
-    operator fun times(b: Vector3): Double {
-        return x * b.x + y * b.y + z * b.z
+//    operator fun times(b: Vector3): Double {
+//        return x * b.x + y * b.y + z * b.z
+//    }
+
+    operator fun times(b: Vector3): Vector3 {
+        val x = this.y * b.z - this.z * b.y
+        val y = this.z * b.x - this.x * b.z
+        val z = this.x * b.y - this.y * b.x
+        return Vector3(x, y, z)
     }
 
     operator fun times(f: Double): Vector3 {
@@ -59,5 +66,9 @@ class Vector3 (private val xi: Double, private val yi: Double, private val zi: D
         x = resolt[0]!!
         y = resolt[1]!!
         z = resolt[2]!!
+    }
+
+    operator fun unaryMinus(): Vector3 {
+        return Vector3(-x, -y, -z)
     }
 }
