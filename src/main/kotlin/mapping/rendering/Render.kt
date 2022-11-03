@@ -12,6 +12,8 @@ class Render (image: WritableImage) {
     val wimage = image
     val zBuffer = Array(wimage.height.toInt()) {DoubleArray(wimage.width.toInt()) {Double.MIN_VALUE} }
     val pw = wimage.pixelWriter
+    val width = wimage.width
+    val height = wimage.height
 
     private fun initBuffers() {
         for (k in zBuffer)
@@ -21,9 +23,12 @@ class Render (image: WritableImage) {
     private fun processPixel (p: Vector3, c: Color) {
         val x = p.x.toInt()
         val y = p.y.toInt()
-        if (p.z > zBuffer[x][y]) {
-            zBuffer[x][y] = p.z
-            pw.setColor(x, y, c)
+       // println(y)
+        if (x > 0 && x < width - 1 && y > 0 && y < (height - 1)) {
+            if (p.z > zBuffer[x][y]) {
+                zBuffer[x][y] = p.z
+                pw.setColor(x, y, c)
+            }
         }
     }
 
@@ -69,11 +74,6 @@ class Render (image: WritableImage) {
 //            blue = 255
 //        if (blue < 0)
 //            blue = 0
-        print(red)
-        print(' ')
-        print(green)
-        print(' ')
-        println(blue)
         //TODO: уточнить, не будет ли слишком сильно затемняться
         return Color.rgb(red, green, blue)
     }
@@ -106,7 +106,6 @@ class Render (image: WritableImage) {
     private fun renderFacet (facet: Facet, scene: Scene, screenCenter: Vector2D) {
         val normal = facet.getNormal(scene.camera, screenCenter)
         if (normal.z < 0) return
-        println(facet.dots[2].position.x)
         val screenFacets = mutableListOf<Vector3>()
         for (v in facet.dots) {
             screenFacets += v.getScreenPos(scene.camera, screenCenter)

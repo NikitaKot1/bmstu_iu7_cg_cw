@@ -7,8 +7,8 @@ class MoveMatrix(private val x: Double, private val y: Double, private val z: Do
         matrix[2][2] = 1.0
         matrix[3][3] = 1.0
 
-        matrix[0][3] = x
-        matrix[1][3] = y
-        matrix[2][3] = z
+        matrix[3][0] = x
+        matrix[3][1] = y
+        matrix[3][2] = z
     }
 }

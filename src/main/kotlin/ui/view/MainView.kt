@@ -23,12 +23,12 @@ class MainView : View("MainWindow") {
             cenw /= 2
             val scene1 = fileMan.loadScene("/home/zorox/Документы/bmstu_iu7_cg_cw/src/main/resources/monkey.sol", cenw)
 
-            println(scene1.camera.pos.position.z)
+            println(wimage.width)
+            println(wimage.height)
+            //render.renderScene(scene1)
+            //scene1.models[0].transform(Vector3(50.0, 40.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, 0.0, 0.0))
+            scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, 90.0, 0.0))
             render.renderScene(scene1)
-            //for (i in 0..360) {
-                scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(90.0, 90.0, 1.0))
-                render.renderScene(scene1)
-            //}
 
         }
         hboxConstraints {
