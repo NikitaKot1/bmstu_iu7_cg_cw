@@ -33,10 +33,10 @@ open class Matrix {
     operator fun times(ver: Vector3) : Vector3 {
         val result = Vector3(.0, .0, .0, .0)
         for (i in 0..3) {
-            result.x += ver.x * matrix[i][1]
-            result.y += ver.y * matrix[i][2]
-            result.z += ver.z * matrix[i][3]
-            result.w += ver.w * matrix[i][4]
+            result.x += ver.x * matrix[i][0]
+            result.y += ver.y * matrix[i][1]
+            result.z += ver.z * matrix[i][2]
+            result.w += ver.w * matrix[i][3]
         }
         return result
     }

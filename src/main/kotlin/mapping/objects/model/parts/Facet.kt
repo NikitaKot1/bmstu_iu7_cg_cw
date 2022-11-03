@@ -5,7 +5,7 @@ import mapping.math.Vector3
 import mapping.objects.camera.Camera
 import tornadofx.Vector2D
 
-data class Facet(private val dotAr: List<Vertex>, private val edgeAr: List<Edge>, private val startColor: Color = Color.rgb(0, 0, 0)) {
+data class Facet(private val dotAr: List<Vertex>, private val edgeAr: List<Edge>, private val startColor: Color = Color.rgb(255, 255, 255)) {
 
     public var dots = dotAr.toMutableList()
     private val edges = edgeAr.toMutableList()
@@ -28,8 +28,8 @@ data class Facet(private val dotAr: List<Vertex>, private val edgeAr: List<Edge>
         val u = dots[1].getScreenPos(camera, screenCenter) - dots[0].getScreenPos(camera, screenCenter)
         val v = dots[2].getScreenPos(camera, screenCenter) - dots[0].getScreenPos(camera, screenCenter)
         val norm = u * v
-        norm.normalize(1.0)
-        return norm
+        return norm.normalize(1.0)
+        //return norm
     }
 
 }

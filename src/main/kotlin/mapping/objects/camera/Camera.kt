@@ -6,5 +6,5 @@ import mapping.objects.model.parts.Vertex
 
 class Camera (private val v: Vertex) : SimpleObject() {
     var pos = v
-    lateinit var center: Vertex
+    //lateinit var center: Vertex
 }

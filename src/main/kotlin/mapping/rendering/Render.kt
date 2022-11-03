@@ -36,18 +36,46 @@ class Render (image: WritableImage) {
         for (v in facets) {
             if (v.x > maxX) maxX = v.x
             if (v.y > maxY) maxY = v.y
-            if (v.x > minX) minX = v.x
-            if (v.y > minY) minY = v.y
+            if (v.x < minX) minX = v.x
+            if (v.y < minY) minY = v.y
         }
-        return IntArray(4) {minX.toInt(); minY.toInt(); maxX.toInt(); maxY.toInt()}
+        val arr = IntArray(4)
+        arr[0] = minX.toInt()
+        arr[1] = minY.toInt()
+        arr[2] = maxX.toInt()
+        arr[3] = maxY.toInt()
+        return arr
     }
     
     private fun calculateFacetColor(facet: Facet, camera: Camera, screenCenter: Vector2D) : Color {
         val n = facet.getNormal(camera, screenCenter)
         val col = facet.color
         val fraction = n.z
+        //println(fraction)
+        val red = (col.red * fraction * 255).toInt()
+//        if (red > 255)
+//            red = 255
+//        if (red < 0)
+//            red = 0
+
+        val green = (col.green * fraction * 255).toInt()
+//        if (green > 255)
+//            green = 255
+//        if (green < 0)
+//            green = 0
+
+        val blue = (col.blue * fraction * 255).toInt()
+//        if (blue > 255)
+//            blue = 255
+//        if (blue < 0)
+//            blue = 0
+        print(red)
+        print(' ')
+        print(green)
+        print(' ')
+        println(blue)
         //TODO: уточнить, не будет ли слишком сильно затемняться
-        return Color.rgb((col.red * fraction).toInt(), (col.red * fraction).toInt(), (col.red * fraction).toInt())
+        return Color.rgb(red, green, blue)
     }
 
     private fun calcBarycentric(x: Int, y: Int, triangle: MutableList<Vector3>, square: Double) : Vector3 {
@@ -78,7 +106,7 @@ class Render (image: WritableImage) {
     private fun renderFacet (facet: Facet, scene: Scene, screenCenter: Vector2D) {
         val normal = facet.getNormal(scene.camera, screenCenter)
         if (normal.z < 0) return
-
+        println(facet.dots[2].position.x)
         val screenFacets = mutableListOf<Vector3>()
         for (v in facet.dots) {
             screenFacets += v.getScreenPos(scene.camera, screenCenter)
@@ -94,6 +122,7 @@ class Render (image: WritableImage) {
 
     fun renderScene (scene: Scene) {
         initBuffers()
+
 
         for (model in scene.models) {
             //Грани

@@ -19,8 +19,8 @@ class Vertex (pos: Vector3){
     }
 
     fun getScreenPos(camera: Camera, screenCenter: Vector2D) : Vector3 {
-        //вообще в ТЗ написано, чтоб можно было именно камеру двигать, над этим надо подумать
-        //в теории, просто матрицу vertex помножить на матрицу камеры перед соотв изменением
+        //TODO: вообще в ТЗ написано, чтоб можно было именно камеру двигать, над этим надо подумать
+        //TODO: в теории, просто матрицу vertex помножить на матрицу камеры перед соотв изменением
 
         val after = transmatr * position
         return Vector3(after.x / after.w, after.y / after.w,after.z / after.w)

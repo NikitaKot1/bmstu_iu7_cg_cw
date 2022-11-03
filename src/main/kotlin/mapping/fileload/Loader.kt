@@ -22,16 +22,16 @@ class Loader (fileName: String){
 
     }
 
-    private fun readPosition(line: String) : Vector3 {
+    private fun readPosition(line: String, mul: Double) : Vector3 {
         val spl = line.split(' ')
-        return Vector3(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble())
+        return Vector3(mul * 2 + spl[1].toDouble() * mul, mul * 2 + spl[2].toDouble() * mul, mul * 2 + spl[3].toDouble() * mul)
     }
 
     private fun readFacetDetails(line: String) : List<Int> {
         val facetVert = mutableListOf<Int>()
         val spl = line.split(' ')
         for (i in 1 until spl.size)
-            facetVert.add(i - 1)
+            facetVert.add(spl[i].toInt() - 1)
         //TODO: проверочку на 3 бы...
         return facetVert
     }
@@ -56,7 +56,7 @@ class Loader (fileName: String){
     }
 
 
-    fun loadModels() : List<Model> {
+    fun loadModels(mul: Double) : List<Model> {
         val models = mutableListOf<Model>()
         var details : PartsOfModel? = null
         var verticesRead = 0
@@ -79,7 +79,7 @@ class Loader (fileName: String){
                 details = PartsOfModel()
             }
             else if (key == "v") {
-                val v = readPosition(line)
+                val v = readPosition(line, mul)
                 details?.vertices?.add(Vertex(v))
             }
             else if (key == "f") {
@@ -111,7 +111,7 @@ class Loader (fileName: String){
         return models
     }
 
-    fun loadScene() : Scene {
+    fun loadScene(mul: Double) : Scene {
         val models = mutableListOf<Model>()
         var details : PartsOfModel? = null
         var verticesRead = 0
@@ -136,7 +136,7 @@ class Loader (fileName: String){
                 details = PartsOfModel()
             }
             else if (key == "v") {
-                val v = readPosition(line)
+                val v = readPosition(line, mul)
                 details?.vertices?.add(Vertex(v))
             }
             else if (key == "f") {
@@ -157,18 +157,18 @@ class Loader (fileName: String){
                 details?.facets?.plusAssign(f)
             }
             else if (key == "ls") {
-                val v = Vertex(readPosition(line))
+                val v = Vertex(readPosition(line, mul))
                 light = Light(v)
             }
             else if (key == "cam") {
-                val v = Vertex(readPosition(line))
+                val v = Vertex(readPosition(line, mul))
                 camera = Camera(v)
             }
         }
 
-        if (details?.toString().toBoolean()) {
-            details?.edges = edges
-            details?.center = details?.findArithCenter()!!
+        if (details != null) {
+            details.edges = edges
+            details.center = details.findArithCenter()
             val m = Model(details)
             models += m
             verticesRead += details.vertices.size
