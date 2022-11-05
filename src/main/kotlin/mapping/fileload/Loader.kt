@@ -1,5 +1,6 @@
 package mapping.fileload
 
+import mapping.coord.Coord
 import mapping.math.Vector3
 import mapping.objects.camera.Camera
 import mapping.scene.Scene
@@ -24,8 +25,9 @@ class Loader (fileName: String){
 
     private fun readPosition(line: String, mul: Double) : Vector3 {
         val spl = line.split(' ')
-        return Vector3(mul * 2 + spl[1].toDouble() * mul, mul * 2 + spl[2].toDouble() * mul, mul * 2 + spl[3].toDouble() * mul)
-        //return Vector3(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble())
+        //val k = Coord.fromOtnToAbs(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble(), mul)
+        //return Vector3(k.x, k.y, k.z)
+        return Vector3(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble())
     }
 
     private fun readFacetDetails(line: String) : List<Int> {

@@ -22,11 +22,11 @@ class PartsOfModel {
     }
 
     fun transform(movep: Vector3, scalep: Vector3, rotatep: Vector3) {
-        move(-center.getNewPosition())
+        //move(-center.getNewPosition())
         scale(scalep)
         rotate(rotatep)
         move(movep)
-        move(center.getNewPosition())
+        //move(center.getNewPosition())
     }
 
     fun findArithCenter() : Vertex {

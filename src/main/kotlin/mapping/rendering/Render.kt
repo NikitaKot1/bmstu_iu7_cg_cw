@@ -2,6 +2,7 @@ package mapping.rendering
 
 import javafx.scene.paint.Color
 import javafx.scene.image.WritableImage
+import mapping.defines.BackgroundColor
 import mapping.math.Vector3
 import mapping.objects.camera.Camera
 import mapping.objects.model.parts.Facet
@@ -10,25 +11,32 @@ import tornadofx.Vector2D
 
 class Render (image: WritableImage) {
     val wimage = image
-    val zBuffer = Array(wimage.height.toInt()) {DoubleArray(wimage.width.toInt()) {Double.MIN_VALUE} }
+    val zBuffer = Array(wimage.width.toInt()) {DoubleArray(wimage.height.toInt()) {Double.MIN_VALUE} }
     val pw = wimage.pixelWriter
     val width = wimage.width
-    val height = wimage.height
+    val height = wimage.height.toInt()
 
     private fun initBuffers() {
-        for (k in zBuffer)
+        for (k in zBuffer) {
             k.fill(Double.MIN_VALUE)
+            //k.fill(-1000000.0)
+        }
+        for (i in 0 until  width.toInt())
+            for (j in 0 until height.toInt())
+                pw.setColor(i, j, BackgroundColor.color)
     }
 
     private fun processPixel (p: Vector3, c: Color) {
         val x = p.x.toInt()
         val y = p.y.toInt()
        // println(y)
-        if (x > 0 && x < width - 1 && y > 0 && y < (height - 1)) {
-            if (p.z > zBuffer[x][y]) {
-                zBuffer[x][y] = p.z
-                pw.setColor(x, y, c)
-            }
+        if (x <= 0 || x >= width - 1)
+            return
+        if (y <= 1 || y >= height - 1)
+            return
+        if (p.z >= zBuffer[x][y]) {
+            zBuffer[x][y] = p.z
+            pw.setColor(x, height - y, c)
         }
     }
 
@@ -85,7 +93,7 @@ class Render (image: WritableImage) {
         return Vector3(vx, vy, z)
     }
 
-    private fun baryCentricInterpol (a: Vector3, b: Vector3, c: Vector3, bary: Vector3) : Double {
+    private fun baryCentricInterpol(a: Vector3, b: Vector3, c: Vector3, bary: Vector3): Double {
         return bary.x * a.z + bary.y * b.z + bary.z * c.z
     }
 
@@ -95,7 +103,7 @@ class Render (image: WritableImage) {
         for (y in rect[1] .. rect[3]) {
             for (x in rect[0]..rect[2]) {
                 val barCoords = calcBarycentric(x, y, facets, square)
-                if (barCoords.x >= -1e5 && barCoords.y >= -1e5 && barCoords.z >= -1e5) {
+                if (barCoords.x >= -1e-5 && barCoords.y >= -1e-5 && barCoords.z >= -1e-5) {
                     val z = baryCentricInterpol(facets[0], facets[1], facets[2], barCoords)
                     processPixel(Vector3(x.toDouble(), y.toDouble(), z), color)
                 }
