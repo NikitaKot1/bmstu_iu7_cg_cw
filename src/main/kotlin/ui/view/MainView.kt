@@ -1,5 +1,6 @@
 package ui.view
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
@@ -14,7 +15,7 @@ class MainView : View("MainWindow") {
     val render = Render(wimage)
     val fileMan = FileManager()
     var scene1 = fileMan.loadScene("/home/zorox/Документы/bmstu_iu7_cg_cw/src/main/resources/monkey.sol", 200.0)
-
+    val visible = Array(3) {true}
     private fun torad(rad: Double) :Double {
         return rad / 180 * 3.14
     }
@@ -28,7 +29,7 @@ class MainView : View("MainWindow") {
             cenw /= 2
 
             scene1.models[0].transform(Vector3(cenw * 2, cenw * 2, 1000.0), Vector3(cenw, cenw, cenw), Vector3(0.0, 0.0, 0.0))
-            render.renderScene(scene1)
+            render.renderScene(scene1, visible)
         }
         hboxConstraints {
             prefWidth = 1000.0
@@ -44,7 +45,7 @@ class MainView : View("MainWindow") {
                     action {
                         val k = torad(10.0)
                         scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(k, 0.0, 0.0))
-                        render.renderScene(scene1)
+                        render.renderScene(scene1, visible)
                     }
                 }
                 hbox {
@@ -55,7 +56,7 @@ class MainView : View("MainWindow") {
                         action {
                             val k = torad(10.0)
                             scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, -k, 0.0))
-                            render.renderScene(scene1)
+                            render.renderScene(scene1, visible)
                         }
                     }
                     button {
@@ -63,7 +64,7 @@ class MainView : View("MainWindow") {
                         action {
                             val k = torad(10.0)
                             scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, k, 0.0))
-                            render.renderScene(scene1)
+                            render.renderScene(scene1, visible)
                         }
                     }
                 }
@@ -72,8 +73,30 @@ class MainView : View("MainWindow") {
                     action {
                         val k = torad(10.0)
                         scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(-k, 0.0, 0.0))
-                        render.renderScene(scene1)
+                        render.renderScene(scene1, visible)
                     }
+                }
+            }
+        }
+        vbox {
+            alignment = Pos.CENTER_LEFT
+            spacing = 10.0
+            run {
+                label { text = "Скрыть?" }
+                checkbox("Грани").action {
+                    visible[0] = !visible[0]
+                    println(visible[0])
+                    render.renderScene(scene1, visible)
+                }
+                checkbox("Ребра").action {
+                    visible[1] = !visible[1]
+                    println(visible[1])
+                    render.renderScene(scene1, visible)
+                }
+                checkbox("Вершины").action {
+                    visible[2] = !visible[2]
+                    println(visible[2])
+                    render.renderScene(scene1, visible)
                 }
             }
         }
@@ -81,14 +104,14 @@ class MainView : View("MainWindow") {
             text = "right"
             action {
                 scene1.models[0].transform(Vector3(10.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, 0.0, 0.0))
-                render.renderScene(scene1)
+                render.renderScene(scene1, visible)
             }
         }
         button {
             text = "down"
             action {
                 scene1.models[0].transform(Vector3(0.0, 10.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, 0.0, 0.0))
-                render.renderScene(scene1)
+                render.renderScene(scene1, visible)
             }
         }
     }

@@ -8,6 +8,7 @@ import mapping.objects.camera.Camera
 import mapping.objects.model.parts.Facet
 import mapping.scene.Scene
 import tornadofx.Vector2D
+import java.util.Arrays
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -28,7 +29,7 @@ class Render (image: WritableImage) {
                 pw.setColor(i, j, BackgroundColor.color)
     }
 
-    private fun processPixel (p: Vector3, c: Color) {
+    private fun processPixel (p: Vector3, c: Color, visible: Boolean) {
         val x = p.x.toInt()
         val y = p.y.toInt()
        // println(y)
@@ -38,7 +39,8 @@ class Render (image: WritableImage) {
             return
         if (p.z >= zBuffer[x][y]) {
             zBuffer[x][y] = p.z
-            pw.setColor(x, height - y, c)
+            if (visible)
+                pw.setColor(x, height - y, c)
         }
     }
 
@@ -46,9 +48,9 @@ class Render (image: WritableImage) {
         val x = p.x.toInt()
         val y = p.y.toInt()
         // println(y)
-        if (x <= 0 || x >= width - 1)
+        if (x <= 3 || x >= width - 3)
             return false
-        if (y <= 1 || y >= height - 1)
+        if (y <= 3 || y >= height - 3)
             return false
         if (p.z + 2 >= zBuffer[x][y]) {
             return true
@@ -113,7 +115,7 @@ class Render (image: WritableImage) {
         return bary.x * a.z + bary.y * b.z + bary.z * c.z
     }
 
-    private fun processFacet(facets: MutableList<Vector3>, rect: IntArray, color: Color) {
+    private fun processFacet(facets: MutableList<Vector3>, rect: IntArray, color: Color, visible: Boolean) {
         val square = (facets[0].y - facets[2].y) * (facets[1].x - facets[2].x) +
                      (facets[1].y - facets[2].y) * (facets[2].x - facets[0].x)
         for (y in rect[1] .. rect[3]) {
@@ -121,13 +123,13 @@ class Render (image: WritableImage) {
                 val barCoords = calcBarycentric(x, y, facets, square)
                 if (barCoords.x >= -1e-5 && barCoords.y >= -1e-5 && barCoords.z >= -1e-5) {
                     val z = baryCentricInterpol(facets[0], facets[1], facets[2], barCoords)
-                    processPixel(Vector3(x.toDouble(), y.toDouble(), z), color)
+                    processPixel(Vector3(x.toDouble(), y.toDouble(), z), color, visible)
                 }
             }
         }
     }
 
-    private fun renderFacet (facet: Facet, scene: Scene, screenCenter: Vector2D) {
+    private fun renderFacet (facet: Facet, scene: Scene, screenCenter: Vector2D, visible: Boolean) {
         val normal = facet.getNormal(scene.camera, screenCenter)
         if (normal.z < 0) return
         val screenFacets = mutableListOf<Vector3>()
@@ -136,13 +138,13 @@ class Render (image: WritableImage) {
         }
         val frameRect = calculateFrameRect(screenFacets)
         val faceColor = calculateFacetColor(facet, scene.camera, screenCenter)
-        processFacet(screenFacets, frameRect, faceColor)
+        processFacet(screenFacets, frameRect, faceColor, visible)
 //        processLine(screenFacets[0], screenFacets[1])
 //        processLine(screenFacets[1], screenFacets[2])
 //        processLine(screenFacets[0], screenFacets[2])
     }
 
-    private fun processLine(p1: Vector3, p2: Vector3, color: Color = Color.BLACK) {
+    private fun processLine(p1: Vector3, p2: Vector3, color: Color = Color.BLACK, visible: Boolean) {
         val xStart = p1.x
         val xEnd = p2.x
         val yStart = p1.y
@@ -152,9 +154,9 @@ class Render (image: WritableImage) {
 
         if (xStart == xEnd && yStart == yEnd) {
             if (zStart > zEnd)
-                processPixel(p1, color)
+                processPixel(p1, color, visible)
             else
-                processPixel(p2, color)
+                processPixel(p2, color, visible)
             return
         }
 
@@ -173,50 +175,51 @@ class Render (image: WritableImage) {
         var curZ = zStart
 
         for (i in 0 until length.toInt()) {
-            processPixel(Vector3(curX, curY, curZ + 1), color)
+            processPixel(Vector3(curX, curY, curZ + 1), color, visible)
             curX += delX
             curY += delY
             curZ += delZ
         }
     }
 
-    fun renderScene (scene: Scene) {
+    fun renderScene (scene: Scene, visible: Array<Boolean>) {
         initBuffers()
 
         for (model in scene.models) {
             //Грани
             for (facet in model.poligons.facets)
-                renderFacet(facet, scene, Vector2D(wimage.width / 2, wimage.height / 2))
+                renderFacet(facet, scene, Vector2D(wimage.width / 2, wimage.height / 2), visible[0])
 
             for (edge in model.poligons.edges)
                 processLine(edge.id_p1.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
-                    edge.id_p2.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)), Color.BLACK)
+                    edge.id_p2.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)), Color.BLACK, visible[1])
 
-            for (ver in model.poligons.vertices) {
-                val screenPos = ver.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2))
-                if (checkPixel(screenPos)) {
-                    val x = screenPos.x.toInt()
-                    val y = screenPos.y.toInt()
-                    val c = Color.BLACK
-                    pw.setColor(x, height - y, c)
+            if (visible[2]) {
+                for (ver in model.poligons.vertices) {
+                    val screenPos = ver.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2))
+                    if (checkPixel(screenPos)) {
+                        val x = screenPos.x.toInt()
+                        val y = screenPos.y.toInt()
+                        val c = Color.BLACK
+                        pw.setColor(x, height - y, c)
 
-                    pw.setColor(x + 1, height - y, c)
-                    pw.setColor(x - 1, height - y, c)
-                    pw.setColor(x, height - y + 1, c)
-                    pw.setColor(x, height - y - 1, c)
+                        pw.setColor(x + 1, height - y, c)
+                        pw.setColor(x - 1, height - y, c)
+                        pw.setColor(x, height - y + 1, c)
+                        pw.setColor(x, height - y - 1, c)
 
-                    pw.setColor(x + 2, height - y, c)
-                    pw.setColor(x - 2, height - y, c)
-                    pw.setColor(x, height - y + 2, c)
-                    pw.setColor(x, height - y - 2, c)
+                        pw.setColor(x + 2, height - y, c)
+                        pw.setColor(x - 2, height - y, c)
+                        pw.setColor(x, height - y + 2, c)
+                        pw.setColor(x, height - y - 2, c)
 
-                    pw.setColor(x + 1, height - y + 1, c)
-                    pw.setColor(x - 1, height - y - 1, c)
-                    pw.setColor(x - 1, height - y + 1, c)
-                    pw.setColor(x + 1, height - y - 1, c)
+                        pw.setColor(x + 1, height - y + 1, c)
+                        pw.setColor(x - 1, height - y - 1, c)
+                        pw.setColor(x - 1, height - y + 1, c)
+                        pw.setColor(x + 1, height - y - 1, c)
+                    }
                 }
             }
-            //TODO: ребра
         }
     }
 }
