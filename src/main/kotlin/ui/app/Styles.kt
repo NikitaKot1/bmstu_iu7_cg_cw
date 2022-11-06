@@ -19,8 +19,8 @@ class Styles : Stylesheet() {
 
         }
         button {
-            padding = box(40.px)
-            fontSize = 20.px
+            padding = box(20.px)
+            fontSize = 10.px
             fontWeight = FontWeight.BOLD
         }
     }

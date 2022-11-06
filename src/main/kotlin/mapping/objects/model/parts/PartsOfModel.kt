@@ -22,11 +22,11 @@ class PartsOfModel {
     }
 
     fun transform(movep: Vector3, scalep: Vector3, rotatep: Vector3) {
-        //move(-center.getNewPosition())
+        move(-center.getNewPosition())
         scale(scalep)
         rotate(rotatep)
         move(movep)
-        //move(center.getNewPosition())
+        move(center.getNewPosition())
     }
 
     fun findArithCenter() : Vertex {
@@ -49,5 +49,10 @@ class PartsOfModel {
             if (point.z < minZ) minZ = point.x
         }
         return Vertex(Vector3((maxX + minX) / 2, (maxY + minY) / 2,(maxZ + minZ) / 2))
+    }
+
+    fun setArithCenter() {
+        center.position = Vector3(0.0, 0.0, 0.0)
+        center.move(findArithCenter().position)
     }
 }

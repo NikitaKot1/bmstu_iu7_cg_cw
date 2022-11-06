@@ -8,6 +8,8 @@ import mapping.objects.camera.Camera
 import mapping.objects.model.parts.Facet
 import mapping.scene.Scene
 import tornadofx.Vector2D
+import kotlin.math.abs
+import kotlin.math.max
 
 class Render (image: WritableImage) {
     val wimage = image
@@ -38,6 +40,20 @@ class Render (image: WritableImage) {
             zBuffer[x][y] = p.z
             pw.setColor(x, height - y, c)
         }
+    }
+
+    private fun checkPixel(p: Vector3) : Boolean {
+        val x = p.x.toInt()
+        val y = p.y.toInt()
+        // println(y)
+        if (x <= 0 || x >= width - 1)
+            return false
+        if (y <= 1 || y >= height - 1)
+            return false
+        if (p.z + 2 >= zBuffer[x][y]) {
+            return true
+        }
+        return false
     }
 
     private fun calculateFrameRect (facets: MutableList<Vector3>) : IntArray {
@@ -121,23 +137,86 @@ class Render (image: WritableImage) {
         val frameRect = calculateFrameRect(screenFacets)
         val faceColor = calculateFacetColor(facet, scene.camera, screenCenter)
         processFacet(screenFacets, frameRect, faceColor)
+//        processLine(screenFacets[0], screenFacets[1])
+//        processLine(screenFacets[1], screenFacets[2])
+//        processLine(screenFacets[0], screenFacets[2])
     }
 
-    private fun processLine(p1: Vector3, p2: Vector3, color: Color) {
-        //TODO: ну мб и можно сделать
+    private fun processLine(p1: Vector3, p2: Vector3, color: Color = Color.BLACK) {
+        val xStart = p1.x
+        val xEnd = p2.x
+        val yStart = p1.y
+        val yEnd = p2.y
+        val zStart = p1.z
+        val zEnd = p2.z
+
+        if (xStart == xEnd && yStart == yEnd) {
+            if (zStart > zEnd)
+                processPixel(p1, color)
+            else
+                processPixel(p2, color)
+            return
+        }
+
+        var delX = xEnd - xStart
+        var delY = yEnd - yStart
+        var delZ = zEnd - zStart
+
+        val length = max(abs(delX), abs(delY))
+
+        delX /= length
+        delY /= length
+        delZ /= length
+
+        var curX = xStart
+        var curY = yStart
+        var curZ = zStart
+
+        for (i in 0 until length.toInt()) {
+            processPixel(Vector3(curX, curY, curZ + 1), color)
+            curX += delX
+            curY += delY
+            curZ += delZ
+        }
     }
 
     fun renderScene (scene: Scene) {
         initBuffers()
-
 
         for (model in scene.models) {
             //Грани
             for (facet in model.poligons.facets)
                 renderFacet(facet, scene, Vector2D(wimage.width / 2, wimage.height / 2))
 
+            for (edge in model.poligons.edges)
+                processLine(edge.id_p1.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
+                    edge.id_p2.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)), Color.BLACK)
+
+            for (ver in model.poligons.vertices) {
+                val screenPos = ver.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2))
+                if (checkPixel(screenPos)) {
+                    val x = screenPos.x.toInt()
+                    val y = screenPos.y.toInt()
+                    val c = Color.BLACK
+                    pw.setColor(x, height - y, c)
+
+                    pw.setColor(x + 1, height - y, c)
+                    pw.setColor(x - 1, height - y, c)
+                    pw.setColor(x, height - y + 1, c)
+                    pw.setColor(x, height - y - 1, c)
+
+                    pw.setColor(x + 2, height - y, c)
+                    pw.setColor(x - 2, height - y, c)
+                    pw.setColor(x, height - y + 2, c)
+                    pw.setColor(x, height - y - 2, c)
+
+                    pw.setColor(x + 1, height - y + 1, c)
+                    pw.setColor(x - 1, height - y - 1, c)
+                    pw.setColor(x - 1, height - y + 1, c)
+                    pw.setColor(x + 1, height - y - 1, c)
+                }
+            }
             //TODO: ребра
-            //TODO: вершины
         }
     }
 }

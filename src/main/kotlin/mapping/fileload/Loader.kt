@@ -73,7 +73,7 @@ class Loader (fileName: String){
             if (key == "o") {
                 if (details != null) {
                     details.edges = edges
-                    details.center = details.findArithCenter()
+                    details.setArithCenter()
                     val m = Model(details)
                     models += m
 
@@ -103,9 +103,9 @@ class Loader (fileName: String){
             }
         }
 
-        if (details?.toString().toBoolean()) {
-            details?.edges = edges
-            details?.center = details?.findArithCenter()!!
+        if (details != null) {
+            details.edges = edges
+            details.setArithCenter()
             val m = Model(details)
             models += m
             verticesRead += details.vertices.size
@@ -130,7 +130,7 @@ class Loader (fileName: String){
             if (key == "o") {
                 if (details != null) {
                     details.edges = edges
-                    details.center = details.findArithCenter()
+                    details.setArithCenter()
                     val m = Model(details)
                     models += m
 
@@ -171,7 +171,7 @@ class Loader (fileName: String){
 
         if (details != null) {
             details.edges = edges
-            details.center = details.findArithCenter()
+            details.setArithCenter()
             val m = Model(details)
             models += m
             verticesRead += details.vertices.size

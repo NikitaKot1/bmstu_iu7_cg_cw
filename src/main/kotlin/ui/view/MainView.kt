@@ -27,11 +27,7 @@ class MainView : View("MainWindow") {
                 cenw = cenh
             cenw /= 2
 
-            scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(cenw, cenw, cenw), Vector3(0.0, 0.0, 0.0))
-
-            println(wimage.width)
-            println(wimage.height)
-            scene1.models[0].transform(Vector3(200.0, 200.0, 1000.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, 0.0, 0.0))
+            scene1.models[0].transform(Vector3(cenw * 2, cenw * 2, 1000.0), Vector3(cenw, cenw, cenw), Vector3(0.0, 0.0, 0.0))
             render.renderScene(scene1)
         }
         hboxConstraints {
@@ -44,10 +40,10 @@ class MainView : View("MainWindow") {
             run {
                 label { text = "Верчение" }
                 button {
-                    text = "z : up"
+                    text = "up"
                     action {
                         val k = torad(10.0)
-                        scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, 0.0, k))
+                        scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(k, 0.0, 0.0))
                         render.renderScene(scene1)
                     }
                 }
@@ -72,15 +68,14 @@ class MainView : View("MainWindow") {
                     }
                 }
                 button {
-                    text = "z : down"
+                    text = "down"
                     action {
                         val k = torad(10.0)
-                        scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, 0.0, -k))
+                        scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(-k, 0.0, 0.0))
                         render.renderScene(scene1)
                     }
                 }
             }
-
         }
         button {
             text = "right"
