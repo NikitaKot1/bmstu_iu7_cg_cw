@@ -24,16 +24,21 @@ class Loader (fileName: String){
     }
 
     private fun readPosition(line: String, mul: Double) : Vector3 {
-        val spl = line.split(' ')
-        //val k = Coord.fromOtnToAbs(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble(), mul)
-        //return Vector3(k.x, k.y, k.z)
-        return Vector3(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble())
+        try {
+            val spl = line.split(' ')
+            //val k = Coord.fromOtnToAbs(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble(), mul)
+            //return Vector3(k.x, k.y, k.z)
+            return Vector3(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble())
+        }
+        finally {
+        }
+        return Vector3(.0, .0, .0)
     }
 
     private fun readFacetDetails(line: String) : List<Int> {
         val facetVert = mutableListOf<Int>()
         val spl = line.split(' ')
-        for (i in 1 until spl.size)
+        for (i in 1 until 4)
             facetVert.add(spl[i].toInt() - 1)
         //TODO: проверочку на 3 бы...
         return facetVert

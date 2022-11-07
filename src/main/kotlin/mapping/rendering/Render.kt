@@ -14,14 +14,14 @@ import kotlin.math.max
 
 class Render (image: WritableImage) {
     val wimage = image
-    val zBuffer = Array(wimage.width.toInt()) {DoubleArray(wimage.height.toInt()) {Double.MIN_VALUE} }
+    val zBuffer = Array(wimage.width.toInt()) {DoubleArray(wimage.height.toInt()) {- Double.MAX_VALUE} }
     val pw = wimage.pixelWriter
     val width = wimage.width
     val height = wimage.height.toInt()
 
     private fun initBuffers() {
         for (k in zBuffer) {
-            k.fill(Double.MIN_VALUE)
+            k.fill(- Double.MAX_VALUE)
             //k.fill(-1000000.0)
         }
         for (i in 0 until  width.toInt())

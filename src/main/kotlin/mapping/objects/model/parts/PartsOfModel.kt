@@ -25,7 +25,7 @@ class PartsOfModel {
         move(-center.getNewPosition())
         scale(scalep)
         rotate(rotatep)
-        move(movep)
+        center.move(movep)
         move(center.getNewPosition())
     }
 
@@ -43,10 +43,10 @@ class PartsOfModel {
             point = v.getNewPosition()
             if (point.x > maxX) maxX = point.x
             if (point.x < minX) minX = point.x
-            if (point.y > maxY) maxY = point.x
-            if (point.y < minY) minY = point.x
-            if (point.z > maxZ) maxZ = point.x
-            if (point.z < minZ) minZ = point.x
+            if (point.y > maxY) maxY = point.y
+            if (point.y < minY) minY = point.y
+            if (point.z > maxZ) maxZ = point.z
+            if (point.z < minZ) minZ = point.z
         }
         return Vertex(Vector3((maxX + minX) / 2, (maxY + minY) / 2,(maxZ + minZ) / 2))
     }

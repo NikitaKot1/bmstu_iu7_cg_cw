@@ -8,6 +8,8 @@ import mapping.fileload.FileManager
 import mapping.math.Vector3
 import mapping.rendering.Render
 import tornadofx.*
+import java.awt.event.MouseAdapter
+import javafx.scene.input.MouseEvent
 
 class MainView : View("MainWindow") {
     private val image = Image("/drawimage.jpg")
@@ -16,19 +18,41 @@ class MainView : View("MainWindow") {
     val fileMan = FileManager()
     var scene1 = fileMan.loadScene("/home/zorox/Документы/bmstu_iu7_cg_cw/src/main/resources/monkey.sol", 200.0)
     val visible = Array(3) {true}
+
+    var pressedFlag = false
+    var pressedX = 0.0
+    var pressedY = 0.0
+
     private fun torad(rad: Double) :Double {
         return rad / 180 * 3.14
     }
 
     override val root = hbox {
         imageview(wimage).apply {
+
+            this.setOnMouseClicked {
+                println(it.x)
+            }
+
+            this.setOnMouseMoved {
+                if (this.isPressed) {
+                    //val dx = it.
+                    //scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, -k, 0.0))
+                }
+            }
+
+
+
             var cenw = wimage.width / 2
             val cenh = wimage.height / 2
             if (cenw > cenh)
                 cenw = cenh
             cenw /= 2
 
-            scene1.models[0].transform(Vector3(cenw * 2, cenw * 2, 1000.0), Vector3(cenw, cenw, cenw), Vector3(0.0, 0.0, 0.0))
+
+
+            scene1.models[0].transform(Vector3(cenw * 2, cenw * 2, .0), Vector3(cenw, cenw, cenw), Vector3(0.0, 0.0, 0.0))
+            scene1.models[0].poligons.setArithCenter()
             render.renderScene(scene1, visible)
         }
         hboxConstraints {
@@ -82,20 +106,17 @@ class MainView : View("MainWindow") {
             alignment = Pos.CENTER_LEFT
             spacing = 10.0
             run {
-                label { text = "Скрыть?" }
+                label { text = "Скрыть:" }
                 checkbox("Грани").action {
                     visible[0] = !visible[0]
-                    println(visible[0])
                     render.renderScene(scene1, visible)
                 }
                 checkbox("Ребра").action {
                     visible[1] = !visible[1]
-                    println(visible[1])
                     render.renderScene(scene1, visible)
                 }
                 checkbox("Вершины").action {
                     visible[2] = !visible[2]
-                    println(visible[2])
                     render.renderScene(scene1, visible)
                 }
             }

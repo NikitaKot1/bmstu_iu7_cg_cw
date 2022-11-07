@@ -10,6 +10,7 @@ data class Facet(private val dotAr: List<Vertex>, private val edgeAr: List<Edge>
     public var dots = dotAr.toMutableList()
     private val edges = edgeAr.toMutableList()
     public var color: Color = startColor
+    var selected = false
 
     fun clone(): Facet {
         val newDots = mutableListOf<Vertex>()
