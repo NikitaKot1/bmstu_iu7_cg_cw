@@ -8,8 +8,6 @@ import mapping.fileload.FileManager
 import mapping.math.Vector3
 import mapping.rendering.Render
 import tornadofx.*
-import java.awt.event.MouseAdapter
-import javafx.scene.input.MouseEvent
 
 class MainView : View("MainWindow") {
     private val image = Image("/drawimage.jpg")
@@ -18,8 +16,8 @@ class MainView : View("MainWindow") {
     val fileMan = FileManager()
     var scene1 = fileMan.loadScene("/home/zorox/Документы/bmstu_iu7_cg_cw/src/main/resources/monkey.sol", 200.0)
     val visible = Array(3) {true}
+    val transform_flags = Array(2) {false}
 
-    var pressedFlag = false
     var pressedX = 0.0
     var pressedY = 0.0
 
@@ -30,14 +28,26 @@ class MainView : View("MainWindow") {
     override val root = hbox {
         imageview(wimage).apply {
 
-            this.setOnMouseClicked {
-                println(it.x)
+            this.setOnMousePressed {
+                pressedX = it.x
+                pressedY = it.y
             }
 
-            this.setOnMouseMoved {
-                if (this.isPressed) {
-                    //val dx = it.
-                    //scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, -k, 0.0))
+            this.setOnMouseDragged {
+                val dx = it.x - pressedX
+                val dy = it.y - pressedY
+                pressedY = it.y
+                pressedX = it.x
+
+                if (transform_flags[0]) {
+                    val move_params = Vector3(dx, - dy, 0.0)
+                    scene1.models[0].transform(move_params, Vector3(1.0, 1.0, 1.0), Vector3(0.0, 0.0, 0.0))
+                    render.renderScene(scene1, visible)
+                }
+                else if (transform_flags[1]) {
+                    val rotate_params = Vector3(-torad(dy) * 0.1, -torad(dx) * 0.1, 0.0)
+                    scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), rotate_params)
+                    render.renderScene(scene1, visible)
                 }
             }
 
@@ -108,6 +118,7 @@ class MainView : View("MainWindow") {
             run {
                 label { text = "Скрыть:" }
                 checkbox("Грани").action {
+
                     visible[0] = !visible[0]
                     render.renderScene(scene1, visible)
                 }
@@ -118,6 +129,26 @@ class MainView : View("MainWindow") {
                 checkbox("Вершины").action {
                     visible[2] = !visible[2]
                     render.renderScene(scene1, visible)
+                }
+            }
+        }
+        vbox {
+            alignment = Pos.CENTER_LEFT
+            spacing = 10.0
+            run {
+                label { text = "При проведении мышкой:" }
+                togglebutton ("Поворот") {
+                    action {
+                        text = if (isSelected) "Перемещение" else "Поворот"
+                        if (isSelected) {
+                            transform_flags[0] = true
+                            transform_flags[1] = false
+                        }
+                        else {
+                            transform_flags[1] = true
+                            transform_flags[0] = false
+                        }
+                    }
                 }
             }
         }
