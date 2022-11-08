@@ -8,7 +8,7 @@ import tornadofx.Vector2D
 data class Facet(private val dotAr: List<Vertex>, private val edgeAr: List<Edge>, private val startColor: Color = Color.rgb(255, 255, 255)) {
 
     public var dots = dotAr.toMutableList()
-    private val edges = edgeAr.toMutableList()
+    public val edges = edgeAr.toMutableList()
     public var color: Color = startColor
     var selected = false
 

@@ -26,11 +26,94 @@ class MainView : View("MainWindow") {
     val trans_of_model_flag = Array(3) {false}
     private val transToggleCroup = ToggleGroup()
 
+    private var p_edge_1 = -1
+    private var p_facet_2 = -1
+    private var e_facet_1 = -1
+    private var e_facet_2 = -1
+
     var pressedX = 0.0
     var pressedY = 0.0
 
     private fun torad(rad: Double) :Double {
         return rad / 180 * 3.14
+    }
+
+    private fun find_nearest_dot (x: Double, y: Double) : Int {
+        var len = 1400.0
+        var p = 0
+        for (ver in 0 until scene1.models[0].poligons.vertices.size) {
+            val screenPos = scene1.models[0].poligons.vertices[ver].getScreenPos(
+                scene1.camera,
+                Vector2D(wimage.width / 2, wimage.height / 2)
+            )
+            if (render.checkPixel(screenPos)) {
+                val ddx = x - screenPos.x
+                val ddy = wimage.height - y - screenPos.y
+                if (sqrt(ddx * ddx + ddy * ddy) < len) {
+                    len = sqrt(ddx * ddx + ddy * ddy)
+                    p = ver
+                }
+            }
+        }
+        return p
+    }
+
+    private fun find_edge_for_v(p1: Int, p2: Int) : Int {
+        if (p1 == -1 || p2 == -1)
+            return -1
+        val v1 = scene1.models[0].poligons.vertices[p1]
+        val v2 = scene1.models[0].poligons.vertices[p2]
+        var flag = false
+        for (ek in 0 until scene1.models[0].poligons.edges.size) {
+            val e = scene1.models[0].poligons.edges[ek]
+            flag = (v1 === e.id_p1 && v2 === e.id_p2) || (v1 === e.id_p2 && v2 === e.id_p1)
+            if (flag) {
+                for (e1 in scene1.models[0].poligons.edges) {
+                    e1.selected = false
+                }
+                for (ve1 in scene1.models[0].poligons.vertices) {
+                    ve1.selected = false
+                }
+
+                scene1.models[0].poligons.vertices[p1].selected = true
+                scene1.models[0].poligons.vertices[p2].selected = true
+                e.selected = true
+                return ek
+            }
+        }
+        return -1
+    }
+
+    private fun find_facet_for_e(e1: Int, e2:Int): Int {
+        if (e1 == -1 || e2 == -1)
+            return -1
+        val ed1 = scene1.models[0].poligons.edges[e1]
+        val ed2 = scene1.models[0].poligons.edges[e2]
+        var flag = false
+        for (fk in 0 until scene1.models[0].poligons.facets.size) {
+            val f = scene1.models[0].poligons.facets[fk]
+            flag = (ed1 == f.edges[0]) || (ed1 == f.edges[1]) || (ed1 == f.edges[2])
+            flag = flag && ((ed2 == f.edges[0]) || (ed2 == f.edges[1]) || (ed2 == f.edges[2]))
+            if (flag) {
+                for (fa in scene1.models[0].poligons.facets) {
+                    fa.selected = false
+                }
+                for (e in scene1.models[0].poligons.edges) {
+                    e.selected = false
+                }
+                for (ve1 in scene1.models[0].poligons.vertices) {
+                    ve1.selected = false
+                }
+
+                for (v in f.dots)
+                    v.selected = true
+                for (e in f.edges)
+                    e.selected = true
+                f.selected = true
+                return fk
+            }
+        }
+        return -1
     }
 
     override val root = hbox {
@@ -44,25 +127,69 @@ class MainView : View("MainWindow") {
                     pressedY = it.y
                 } else {
                     if (trans_of_model_flag[0]) {
-                        var len = 1400.0
-                        var p = 0
-                        for (ver in 0 until scene1.models[0].poligons.vertices.size) {
-                            val screenPos = scene1.models[0].poligons.vertices[ver].getScreenPos(
-                                scene1.camera,
-                                Vector2D(wimage.width / 2, wimage.height / 2)
-                            )
-                            if (render.checkPixel(screenPos)) {
-                                val ddx = it.x - screenPos.x
-                                val ddy = wimage.height - it.y - screenPos.y
-                                if (sqrt(ddx * ddx + ddy * ddy) < len) {
-                                    len = sqrt(ddx * ddx + ddy * ddy)
-                                    p = ver
-                                }
-                            }
-                        }
+                        val p = find_nearest_dot(it.x, it.y)
                         for (ver in scene1.models[0].poligons.vertices)
                             ver.selected = false
                         scene1.models[0].poligons.vertices[p].selected = true
+                        render.renderScene(scene1, visible)
+                    } else if (trans_of_model_flag[1]) {
+                        val p = find_nearest_dot(it.x, it.y)
+                        if (p_edge_1 == -1) {
+                            p_edge_1 = p
+                            scene1.models[0].poligons.vertices[p].selected = true
+                        }
+                        else {
+                            scene1.models[0].poligons.vertices[p].selected = true
+                            e_facet_1 = find_edge_for_v(p, p_edge_1)
+                            if (e_facet_1 == -1) {
+                                scene1.models[0].poligons.vertices[p].selected = false
+                                scene1.models[0].poligons.vertices[p_edge_1].selected = false
+                                p_edge_1 = -1
+                            }
+                            e_facet_1 = -1
+                        }
+                        render.renderScene(scene1, visible)
+                    } else if (trans_of_model_flag[2]) {
+                        val p = find_nearest_dot(it.x, it.y)
+                        if (p_edge_1 == -1) {
+                            p_edge_1 = p
+                            scene1.models[0].poligons.vertices[p].selected = true
+                        }
+                        else if (p_facet_2 == -1){
+                            p_facet_2 = p
+                            scene1.models[0].poligons.vertices[p].selected = true
+                            e_facet_1 = find_edge_for_v(p, p_edge_1)
+                            if (e_facet_1 == -1) {
+                                scene1.models[0].poligons.vertices[p].selected = false
+                                scene1.models[0].poligons.vertices[p_edge_1].selected = false
+                                p_edge_1 = -1
+                            }
+                        }
+                        else {
+                            scene1.models[0].poligons.vertices[p].selected = true
+                            e_facet_2 = find_edge_for_v(p, p_facet_2)
+                            if (e_facet_2 == -1) {
+                                scene1.models[0].poligons.vertices[p].selected = false
+                                scene1.models[0].poligons.vertices[p_edge_1].selected = false
+                                scene1.models[0].poligons.edges[e_facet_1].selected = false
+                                p_edge_1 = -1
+                                e_facet_1 = -1
+                                p_facet_2 = -1
+                            }
+                            else {
+                                val fac = find_facet_for_e(e_facet_1, e_facet_2)
+                                if (fac == -1) {
+                                    scene1.models[0].poligons.vertices[p].selected = false
+                                    scene1.models[0].poligons.vertices[p_facet_2].selected = false
+                                    scene1.models[0].poligons.vertices[p_edge_1].selected = false
+                                    scene1.models[0].poligons.edges[e_facet_1].selected = false
+                                    p_edge_1 = -1
+                                    e_facet_1 = -1
+                                    p_facet_2 = -1
+                                }
+
+                            }
+                        }
                         render.renderScene(scene1, visible)
                     }
                 }
@@ -86,7 +213,7 @@ class MainView : View("MainWindow") {
                     }
                 }
             }
-            
+
             var cenw = wimage.width / 2
             val cenh = wimage.height / 2
             if (cenw > cenh)

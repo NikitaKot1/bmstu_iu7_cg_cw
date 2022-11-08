@@ -48,5 +48,8 @@ class Vertex (pos: Vector3){
         transmatr *= RotateOZMatrix(angel)
     }
 
+//    override operator fun equals (other: Any?) : Boolean {
+//
+//    }
     //дистанция?
 }

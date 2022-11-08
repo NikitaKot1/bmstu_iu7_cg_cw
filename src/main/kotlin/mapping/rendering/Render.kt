@@ -122,11 +122,14 @@ class Render (image: WritableImage) {
             screenFacets += v.getScreenPos(scene.camera, screenCenter)
         }
         val frameRect = calculateFrameRect(screenFacets)
-        val faceColor = calculateFacetColor(facet, scene.camera, screenCenter)
+        var faceColor = calculateFacetColor(facet, scene.camera, screenCenter)
+        if (facet.selected) {
+            if (facet.color == Color.BLUE)
+                faceColor = Color.ORANGE
+            else
+                faceColor = Color.BLUE
+        }
         processFacet(screenFacets, frameRect, faceColor, visible)
-//        processLine(screenFacets[0], screenFacets[1])
-//        processLine(screenFacets[1], screenFacets[2])
-//        processLine(screenFacets[0], screenFacets[2])
     }
 
     private fun processLine(p1: Vector3, p2: Vector3, color: Color = Color.BLACK, visible: Boolean) {
@@ -175,9 +178,15 @@ class Render (image: WritableImage) {
             for (facet in model.poligons.facets)
                 renderFacet(facet, scene, Vector2D(wimage.width / 2, wimage.height / 2), visible[0])
 
-            for (edge in model.poligons.edges)
-                processLine(edge.id_p1.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
-                    edge.id_p2.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)), Color.BLACK, visible[1])
+            for (edge in model.poligons.edges) {
+                var c = Color.BLACK
+                if (edge.selected)
+                    c = Color.BLUE
+                processLine(
+                    edge.id_p1.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
+                    edge.id_p2.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
+                    c, visible[1])
+            }
 
             if (visible[2]) {
                 for (ver in model.poligons.vertices) {
