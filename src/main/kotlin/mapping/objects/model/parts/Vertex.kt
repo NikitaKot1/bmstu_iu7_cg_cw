@@ -13,7 +13,7 @@ import tornadofx.Vector2D
 class Vertex (pos: Vector3){
     var position = pos
     var transmatr = Matrix()
-
+    var selected = false
     fun getNewPosition() : Vector3 {
         return transmatr * position
     }

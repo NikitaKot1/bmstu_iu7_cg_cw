@@ -29,7 +29,7 @@ class Render (image: WritableImage) {
                 pw.setColor(i, j, BackgroundColor.color)
     }
 
-    private fun processPixel (p: Vector3, c: Color, visible: Boolean) {
+    fun processPixel (p: Vector3, c: Color, visible: Boolean) {
         val x = p.x.toInt()
         val y = p.y.toInt()
        // println(y)
@@ -44,7 +44,7 @@ class Render (image: WritableImage) {
         }
     }
 
-    private fun checkPixel(p: Vector3) : Boolean {
+    fun checkPixel(p: Vector3) : Boolean {
         val x = p.x.toInt()
         val y = p.y.toInt()
         // println(y)
@@ -82,24 +82,9 @@ class Render (image: WritableImage) {
         val n = facet.getNormal(camera, screenCenter)
         val col = facet.color
         val fraction = n.z
-        //println(fraction)
         val red = (col.red * fraction * 255).toInt()
-//        if (red > 255)
-//            red = 255
-//        if (red < 0)
-//            red = 0
-
         val green = (col.green * fraction * 255).toInt()
-//        if (green > 255)
-//            green = 255
-//        if (green < 0)
-//            green = 0
-
         val blue = (col.blue * fraction * 255).toInt()
-//        if (blue > 255)
-//            blue = 255
-//        if (blue < 0)
-//            blue = 0
         //TODO: уточнить, не будет ли слишком сильно затемняться
         return Color.rgb(red, green, blue)
     }
@@ -200,7 +185,11 @@ class Render (image: WritableImage) {
                     if (checkPixel(screenPos)) {
                         val x = screenPos.x.toInt()
                         val y = screenPos.y.toInt()
-                        val c = Color.BLACK
+                        var c = Color.BLACK
+                        if (ver.selected)
+                            c = Color.BLUE
+
+
                         pw.setColor(x, height - y, c)
 
                         pw.setColor(x + 1, height - y, c)
