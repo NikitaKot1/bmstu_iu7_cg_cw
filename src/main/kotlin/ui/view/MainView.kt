@@ -34,19 +34,23 @@ class MainView : View("MainWindow") {
     }
 
     override val root = hbox {
+        alignment = Pos.TOP_LEFT
+        spacing = 20.0
         imageview(wimage).apply {
 
             this.setOnMousePressed {
                 if (!trans_of_model) {
                     pressedX = it.x
                     pressedY = it.y
-                }
-                else {
+                } else {
                     if (trans_of_model_flag[0]) {
                         var len = 1400.0
                         var p = 0
-                        for (ver in 0 until  scene1.models[0].poligons.vertices.size) {
-                            val screenPos = scene1.models[0].poligons.vertices[ver].getScreenPos(scene1.camera, Vector2D(wimage.width / 2, wimage.height / 2))
+                        for (ver in 0 until scene1.models[0].poligons.vertices.size) {
+                            val screenPos = scene1.models[0].poligons.vertices[ver].getScreenPos(
+                                scene1.camera,
+                                Vector2D(wimage.width / 2, wimage.height / 2)
+                            )
                             if (render.checkPixel(screenPos)) {
                                 val ddx = it.x - screenPos.x
                                 val ddy = wimage.height - it.y - screenPos.y
@@ -82,18 +86,18 @@ class MainView : View("MainWindow") {
                     }
                 }
             }
-
-
-
+            
             var cenw = wimage.width / 2
             val cenh = wimage.height / 2
             if (cenw > cenh)
                 cenw = cenh
             cenw /= 2
 
-
-
-            scene1.models[0].transform(Vector3(cenw * 2, cenw * 2, .0), Vector3(cenw, cenw, cenw), Vector3(0.0, 0.0, 0.0))
+            scene1.models[0].transform(
+                Vector3(cenw * 2, cenw * 2, .0),
+                Vector3(cenw, cenw, cenw),
+                Vector3(0.0, 0.0, 0.0)
+            )
             scene1.models[0].poligons.setArithCenter()
             render.renderScene(scene1, visible)
         }
@@ -102,114 +106,133 @@ class MainView : View("MainWindow") {
             prefHeight = 1000.0
         }
         vbox {
-            alignment = Pos.CENTER
-            spacing = 10.0
-            run {
-                label { text = "Верчение" }
-                button {
-                    text = "up"
-                    action {
-                        val k = torad(10.0)
-                        scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(k, 0.0, 0.0))
-                        render.renderScene(scene1, visible)
-                    }
-                }
-                hbox {
-                    alignment = Pos.CENTER
-                    spacing = 10.0
+            alignment = Pos.TOP_CENTER
+            spacing = 20.0
+            vbox {
+                alignment = Pos.CENTER
+                spacing = 10.0
+                run {
+                    label { text = "Верчение" }
                     button {
-                        text = "left"
+                        text = "up"
                         action {
                             val k = torad(10.0)
-                            scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, -k, 0.0))
+                            scene1.models[0].transform(
+                                Vector3(0.0, 0.0, 0.0),
+                                Vector3(1.0, 1.0, 1.0),
+                                Vector3(k, 0.0, 0.0)
+                            )
                             render.renderScene(scene1, visible)
                         }
                     }
+                    hbox {
+                        alignment = Pos.CENTER
+                        spacing = 10.0
+                        button {
+                            text = "left"
+                            action {
+                                val k = torad(10.0)
+                                scene1.models[0].transform(
+                                    Vector3(0.0, 0.0, 0.0),
+                                    Vector3(1.0, 1.0, 1.0),
+                                    Vector3(0.0, -k, 0.0)
+                                )
+                                render.renderScene(scene1, visible)
+                            }
+                        }
+                        button {
+                            text = "right"
+                            action {
+                                val k = torad(10.0)
+                                scene1.models[0].transform(
+                                    Vector3(0.0, 0.0, 0.0),
+                                    Vector3(1.0, 1.0, 1.0),
+                                    Vector3(0.0, k, 0.0)
+                                )
+                                render.renderScene(scene1, visible)
+                            }
+                        }
+                    }
                     button {
-                        text = "right"
+                        text = "down"
                         action {
                             val k = torad(10.0)
-                            scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(0.0, k, 0.0))
+                            scene1.models[0].transform(
+                                Vector3(0.0, 0.0, 0.0),
+                                Vector3(1.0, 1.0, 1.0),
+                                Vector3(-k, 0.0, 0.0)
+                            )
                             render.renderScene(scene1, visible)
                         }
                     }
                 }
-                button {
-                    text = "down"
-                    action {
-                        val k = torad(10.0)
-                        scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), Vector3(-k, 0.0, 0.0))
+            }
+            vbox {
+                alignment = Pos.CENTER_LEFT
+                spacing = 10.0
+                run {
+                    label { text = "Скрыть:" }
+                    checkbox("Грани").action {
+
+                        visible[0] = !visible[0]
+                        render.renderScene(scene1, visible)
+                    }
+                    checkbox("Ребра").action {
+                        visible[1] = !visible[1]
+                        render.renderScene(scene1, visible)
+                    }
+                    checkbox("Вершины").action {
+                        visible[2] = !visible[2]
                         render.renderScene(scene1, visible)
                     }
                 }
             }
-        }
-        vbox {
-            alignment = Pos.CENTER_LEFT
-            spacing = 10.0
-            run {
-                label { text = "Скрыть:" }
-                checkbox("Грани").action {
-
-                    visible[0] = !visible[0]
-                    render.renderScene(scene1, visible)
-                }
-                checkbox("Ребра").action {
-                    visible[1] = !visible[1]
-                    render.renderScene(scene1, visible)
-                }
-                checkbox("Вершины").action {
-                    visible[2] = !visible[2]
-                    render.renderScene(scene1, visible)
-                }
-            }
-        }
-        vbox {
-            alignment = Pos.CENTER_LEFT
-            spacing = 10.0
-            run {
-                label { text = "При проведении мышкой:" }
-                togglebutton ("Поворот") {
-                    action {
-                        text = if (isSelected) "Перемещение" else "Поворот"
-                        if (isSelected) {
-                            transform_flags[0] = true
-                            transform_flags[1] = false
-                        }
-                        else {
-                            transform_flags[1] = true
-                            transform_flags[0] = false
+            vbox {
+                alignment = Pos.CENTER_LEFT
+                spacing = 10.0
+                run {
+                    label { text = "При проведении мышкой:" }
+                    togglebutton("Поворот") {
+                        action {
+                            text = if (isSelected) "Перемещение" else "Поворот"
+                            if (isSelected) {
+                                transform_flags[0] = true
+                                transform_flags[1] = false
+                            } else {
+                                transform_flags[1] = true
+                                transform_flags[0] = false
+                            }
                         }
                     }
                 }
             }
-        }
 
-        vbox {
-            alignment = Pos.CENTER_LEFT
-            spacing = 10.0
-            run {
-                label { text = "Преобразования модели" }
-                checkbox("Начать преобразование").action {
-                    trans_of_model = !trans_of_model
-                }
+            vbox {
+                alignment = Pos.CENTER_LEFT
+                spacing = 10.0
+                run {
+                    label { text = "Преобразования модели" }
+                    checkbox("Начать преобразование").action {
+                        trans_of_model = !trans_of_model
+                    }
 
-                togglebutton("Вершина", transToggleCroup).action {
-                    trans_of_model_flag[0] = true
-                    trans_of_model_flag[1] = false
-                    trans_of_model_flag[2] = false
-                }
-                togglebutton("Ребро", transToggleCroup).action {
-                    trans_of_model_flag[0] = false
-                    trans_of_model_flag[1] = true
-                    trans_of_model_flag[2] = false
-                }
-                togglebutton("Грань", transToggleCroup).action {
-                    trans_of_model_flag[0] = false
-                    trans_of_model_flag[1] = false
-                    trans_of_model_flag[2] = true
-                }
+                    togglebutton("Вершина", transToggleCroup).action {
+                        trans_of_model_flag[0] = true
+                        trans_of_model_flag[1] = false
+                        trans_of_model_flag[2] = false
+                    }
+                    togglebutton("Ребро", transToggleCroup).action {
+                        trans_of_model_flag[0] = false
+                        trans_of_model_flag[1] = true
+                        trans_of_model_flag[2] = false
+                    }
+                    togglebutton("Грань", transToggleCroup).action {
+                        trans_of_model_flag[0] = false
+                        trans_of_model_flag[1] = false
+                        trans_of_model_flag[2] = true
+                    }
 
+                }
             }
         }
     }
