@@ -5,6 +5,7 @@ import javafx.geometry.Pos
 import javafx.scene.control.ToggleGroup
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
+import javafx.scene.text.Font
 import mapping.fileload.FileManager
 import mapping.math.Vector3
 import mapping.rendering.Render
@@ -25,6 +26,9 @@ class MainView : View("MainWindow") {
     var trans_of_model = false
     val trans_of_model_flag = Array(3) {false}
     private val transToggleCroup = ToggleGroup()
+    private val transModelToggleGroup = ToggleGroup()
+
+    private var handle_transform_flag = false
 
     private var p_edge_1 = -1
     private var p_facet_2 = -1
@@ -68,13 +72,7 @@ class MainView : View("MainWindow") {
             val e = scene1.models[0].poligons.edges[ek]
             flag = (v1 === e.id_p1 && v2 === e.id_p2) || (v1 === e.id_p2 && v2 === e.id_p1)
             if (flag) {
-                for (e1 in scene1.models[0].poligons.edges) {
-                    e1.selected = false
-                }
-                for (ve1 in scene1.models[0].poligons.vertices) {
-                    ve1.selected = false
-                }
-
+                full_not_selected()
                 scene1.models[0].poligons.vertices[p1].selected = true
                 scene1.models[0].poligons.vertices[p2].selected = true
                 e.selected = true
@@ -95,16 +93,7 @@ class MainView : View("MainWindow") {
             flag = (ed1 == f.edges[0]) || (ed1 == f.edges[1]) || (ed1 == f.edges[2])
             flag = flag && ((ed2 == f.edges[0]) || (ed2 == f.edges[1]) || (ed2 == f.edges[2]))
             if (flag) {
-                for (fa in scene1.models[0].poligons.facets) {
-                    fa.selected = false
-                }
-                for (e in scene1.models[0].poligons.edges) {
-                    e.selected = false
-                }
-                for (ve1 in scene1.models[0].poligons.vertices) {
-                    ve1.selected = false
-                }
-
+                full_not_selected()
                 for (v in f.dots)
                     v.selected = true
                 for (e in f.edges)
@@ -114,6 +103,18 @@ class MainView : View("MainWindow") {
             }
         }
         return -1
+    }
+
+    private fun full_not_selected() {
+        for (fa in scene1.models[0].poligons.facets) {
+            fa.selected = false
+        }
+        for (ea in scene1.models[0].poligons.edges) {
+            ea.selected = false
+        }
+        for (va in scene1.models[0].poligons.vertices) {
+            va.selected = false
+        }
     }
 
     override val root = hbox {
@@ -126,10 +127,9 @@ class MainView : View("MainWindow") {
                     pressedX = it.x
                     pressedY = it.y
                 } else {
+                    full_not_selected()
                     if (trans_of_model_flag[0]) {
                         val p = find_nearest_dot(it.x, it.y)
-                        for (ver in scene1.models[0].poligons.vertices)
-                            ver.selected = false
                         scene1.models[0].poligons.vertices[p].selected = true
                         render.renderScene(scene1, visible)
                     } else if (trans_of_model_flag[1]) {
@@ -142,8 +142,6 @@ class MainView : View("MainWindow") {
                             scene1.models[0].poligons.vertices[p].selected = true
                             e_facet_1 = find_edge_for_v(p, p_edge_1)
                             if (e_facet_1 == -1) {
-                                scene1.models[0].poligons.vertices[p].selected = false
-                                scene1.models[0].poligons.vertices[p_edge_1].selected = false
                                 p_edge_1 = -1
                             }
                             e_facet_1 = -1
@@ -160,8 +158,6 @@ class MainView : View("MainWindow") {
                             scene1.models[0].poligons.vertices[p].selected = true
                             e_facet_1 = find_edge_for_v(p, p_edge_1)
                             if (e_facet_1 == -1) {
-                                scene1.models[0].poligons.vertices[p].selected = false
-                                scene1.models[0].poligons.vertices[p_edge_1].selected = false
                                 p_edge_1 = -1
                             }
                         }
@@ -169,9 +165,6 @@ class MainView : View("MainWindow") {
                             scene1.models[0].poligons.vertices[p].selected = true
                             e_facet_2 = find_edge_for_v(p, p_facet_2)
                             if (e_facet_2 == -1) {
-                                scene1.models[0].poligons.vertices[p].selected = false
-                                scene1.models[0].poligons.vertices[p_edge_1].selected = false
-                                scene1.models[0].poligons.edges[e_facet_1].selected = false
                                 p_edge_1 = -1
                                 e_facet_1 = -1
                                 p_facet_2 = -1
@@ -179,19 +172,14 @@ class MainView : View("MainWindow") {
                             else {
                                 val fac = find_facet_for_e(e_facet_1, e_facet_2)
                                 if (fac == -1) {
-                                    scene1.models[0].poligons.vertices[p].selected = false
-                                    scene1.models[0].poligons.vertices[p_facet_2].selected = false
-                                    scene1.models[0].poligons.vertices[p_edge_1].selected = false
-                                    scene1.models[0].poligons.edges[e_facet_1].selected = false
                                     p_edge_1 = -1
                                     e_facet_1 = -1
                                     p_facet_2 = -1
                                 }
-
                             }
                         }
-                        render.renderScene(scene1, visible)
                     }
+                    render.renderScene(scene1, visible)
                 }
             }
 
@@ -241,7 +229,7 @@ class MainView : View("MainWindow") {
                 run {
                     label { text = "Верчение" }
                     button {
-                        text = "up"
+                        text = "вверх"
                         action {
                             val k = torad(10.0)
                             scene1.models[0].transform(
@@ -256,19 +244,7 @@ class MainView : View("MainWindow") {
                         alignment = Pos.CENTER
                         spacing = 10.0
                         button {
-                            text = "left"
-                            action {
-                                val k = torad(10.0)
-                                scene1.models[0].transform(
-                                    Vector3(0.0, 0.0, 0.0),
-                                    Vector3(1.0, 1.0, 1.0),
-                                    Vector3(0.0, -k, 0.0)
-                                )
-                                render.renderScene(scene1, visible)
-                            }
-                        }
-                        button {
-                            text = "right"
+                            text = "влево"
                             action {
                                 val k = torad(10.0)
                                 scene1.models[0].transform(
@@ -279,9 +255,21 @@ class MainView : View("MainWindow") {
                                 render.renderScene(scene1, visible)
                             }
                         }
+                        button {
+                            text = "вправо"
+                            action {
+                                val k = torad(10.0)
+                                scene1.models[0].transform(
+                                    Vector3(0.0, 0.0, 0.0),
+                                    Vector3(1.0, 1.0, 1.0),
+                                    Vector3(0.0, -k, 0.0)
+                                )
+                                render.renderScene(scene1, visible)
+                            }
+                        }
                     }
                     button {
-                        text = "down"
+                        text = "вниз"
                         action {
                             val k = torad(10.0)
                             scene1.models[0].transform(
@@ -319,21 +307,16 @@ class MainView : View("MainWindow") {
                 spacing = 10.0
                 run {
                     label { text = "При проведении мышкой:" }
-                    togglebutton("Поворот") {
-                        action {
-                            text = if (isSelected) "Перемещение" else "Поворот"
-                            if (isSelected) {
-                                transform_flags[0] = true
-                                transform_flags[1] = false
-                            } else {
-                                transform_flags[1] = true
-                                transform_flags[0] = false
-                            }
-                        }
+                    togglebutton("Поворот", transModelToggleGroup) .action {
+                        transform_flags[0] = false
+                        transform_flags[1] = true
+                    }
+                    togglebutton("Перемещение", transModelToggleGroup) .action {
+                        transform_flags[0] = true
+                        transform_flags[1] = false
                     }
                 }
             }
-
             vbox {
                 alignment = Pos.CENTER_LEFT
                 spacing = 10.0
@@ -359,6 +342,200 @@ class MainView : View("MainWindow") {
                         trans_of_model_flag[2] = true
                     }
 
+                }
+            }
+        }
+
+        //новая колонка
+        vbox {
+            alignment = Pos.TOP_CENTER
+            spacing = 20.0
+            vbox {
+                alignment = Pos.CENTER
+                spacing = 10.0
+                run {
+                    label { text = "Перемещение" }
+                    button {
+                        text = "вверх"
+                        action {
+                            scene1.models[0].transform(
+                                Vector3(0.0, 10.0, 0.0),
+                                Vector3(1.0, 1.0, 1.0),
+                                Vector3(0.0, 0.0, 0.0)
+                            )
+                            render.renderScene(scene1, visible)
+                        }
+                    }
+                    hbox {
+                        alignment = Pos.CENTER
+                        spacing = 10.0
+                        button {
+                            text = "влево"
+                            action {
+                                scene1.models[0].transform(
+                                    Vector3(-10.0, 0.0, 0.0),
+                                    Vector3(1.0, 1.0, 1.0),
+                                    Vector3(0.0, 0.0, 0.0)
+                                )
+                                render.renderScene(scene1, visible)
+                            }
+                        }
+                        button {
+                            text = "вправо"
+                            action {
+                                scene1.models[0].transform(
+                                    Vector3(10.0, 0.0, 0.0),
+                                    Vector3(1.0, 1.0, 1.0),
+                                    Vector3(0.0, 0.0, 0.0)
+                                )
+                                render.renderScene(scene1, visible)
+                            }
+                        }
+                    }
+                    button {
+                        text = "вниз"
+                        action {
+                            scene1.models[0].transform(
+                                Vector3(0.0, -10.0, 0.0),
+                                Vector3(1.0, 1.0, 1.0),
+                                Vector3(0.0, 0.0, 0.0)
+                            )
+                            render.renderScene(scene1, visible)
+                        }
+                    }
+                }
+            }
+            vbox {
+                alignment = Pos.CENTER
+                spacing = 10.0
+                run {
+                    var move_x : Double? = 0.0
+                    var move_y : Double? = 0.0
+                    var move_z : Double? = 0.0
+                    var rotate_x : Double? = 0.0
+                    var rotate_y : Double? = 0.0
+                    var rotate_z : Double? = 0.0
+                    label {text = "Перемещение модели"}
+                    hbox {
+                        vbox {
+                            label {text = "Движение"}
+                            textfield ("0.0"){
+                                tooltip("Преобразование по X") {font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> move_x = this.text.toDoubleOrNull()}
+                            }
+                            textfield ("0.0"){
+                                tooltip("Преобразование по Y") {font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> move_y = this.text.toDoubleOrNull()}
+                            }
+                            textfield ("0.0"){
+                                tooltip("Преобразование по Z") { font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> move_z = this.text.toDoubleOrNull()}
+                            }
+                        }
+                        vbox {
+                            label {text = "Поворот"}
+                            textfield ("0.0"){
+                                tooltip("Преобразование по X в градусах") {font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> rotate_x = this.text.toDoubleOrNull()}
+                            }
+                            textfield ("0.0"){
+                                tooltip("Преобразование по Y в градусах") {font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> rotate_y = this.text.toDoubleOrNull()}
+                            }
+                            textfield ("0.0"){
+                                tooltip("Преобразование по Z в градусах") { font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> rotate_z = this.text.toDoubleOrNull()}
+                            }
+                        }
+                    }
+                    button {
+                        this.text = "Переместить"
+                        action {
+                            if (move_x == null || move_y == null || move_z == null)
+                                this.text = "Неверный ввод!"
+                            else {
+                                this.text = "Переместить"
+                                //text("Преобразовать" )
+                                scene1.models[0].transform(
+                                    Vector3(move_x!!, move_y!!, move_z!!),
+                                    Vector3(1.0, 1.0, 1.0),
+                                    Vector3(torad(rotate_x!!), torad(rotate_y!!), torad(rotate_z!!))
+                                )
+                                render.renderScene(scene1, visible)
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            vbox {
+                alignment = Pos.CENTER
+                spacing = 10.0
+                run {
+                    var move_x : Double? = 0.0
+                    var move_y : Double? = 0.0
+                    var move_z : Double? = 0.0
+                    var rotate_x : Double? = 0.0
+                    var rotate_y : Double? = 0.0
+                    var rotate_z : Double? = 0.0
+                    label {text = "Преобразование модели"}
+                    hbox {
+                        vbox {
+                            label {text = "Движение"}
+                            textfield ("0.0"){
+                                tooltip("Преобразование по X") {font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> move_x = this.text.toDoubleOrNull()}
+                            }
+                            textfield ("0.0"){
+                                tooltip("Преобразование по Y") {font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> move_y = this.text.toDoubleOrNull()}
+                            }
+                            textfield ("0.0"){
+                                tooltip("Преобразование по Z") { font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> move_z = this.text.toDoubleOrNull()}
+                            }
+                            button {
+                                this.text = "Преобразовать"
+                                action {
+                                    if (move_x == null || move_y == null || move_z == null)
+                                        this.text = "Неверный ввод!"
+                                    else {
+                                        this.text = "Преобразовать"
+                                        for (v in scene1.models[0].poligons.vertices)
+                                            if (v.selected)
+                                                v.move(Vector3(move_x!!, move_y!!, move_z!!))
+                                        render.renderScene(scene1, visible)
+                                    }
+                                }
+                            }
+                        }
+                        vbox {//TODO: спросить, что вообще с вращением граней и тд делать
+                            label {text = "Поворот"}
+                            textfield ("0.0"){
+                                tooltip("Преобразование по X в градусах") {font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> rotate_x = this.text.toDoubleOrNull()}
+                            }
+                            textfield ("0.0"){
+                                tooltip("Преобразование по Y в градусах") {font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> rotate_y = this.text.toDoubleOrNull()}
+                            }
+                            textfield ("0.0"){
+                                tooltip("Преобразование по Z в градусах") { font = Font.font("Verdana")}
+                                textProperty().addListener {obj, old, new -> rotate_z = this.text.toDoubleOrNull()}
+                            }
+                        }
+                    }
+                    vbox {
+                        alignment = Pos.CENTER
+                        spacing = 10.0
+                        run {
+                            label {text = "Ручное преобразование модели"}
+                            checkbox("Ручное преобразование").action {
+                                handle_transform_flag = !handle_transform_flag
+                            }
+                        }
+                    }
                 }
             }
         }
