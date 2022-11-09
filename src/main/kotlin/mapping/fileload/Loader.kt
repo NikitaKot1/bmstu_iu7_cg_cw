@@ -26,8 +26,6 @@ class Loader (fileName: String){
     private fun readPosition(line: String, mul: Double) : Vector3 {
         try {
             val spl = line.split(' ')
-            //val k = Coord.fromOtnToAbs(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble(), mul)
-            //return Vector3(k.x, k.y, k.z)
             return Vector3(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble())
         }
         finally {

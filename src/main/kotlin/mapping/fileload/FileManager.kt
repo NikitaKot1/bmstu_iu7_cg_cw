@@ -1,5 +1,6 @@
 package mapping.fileload
 
+import mapping.objects.camera.Camera
 import mapping.objects.model.Model
 import mapping.scene.Scene
 
@@ -18,7 +19,11 @@ class FileManager {
         return models
     }
 
-    fun saveScene() {
+    fun saveModel(fileName: String, camera: Camera, model: Model) {
+        val saver = Saver(fileName)
+        saver.createFile()
+        saver.saveModel(model, camera)
+        saver.closeFile()
         //TODO: сам понимаешь, надо сделать когда-нибудь
     }
 }
