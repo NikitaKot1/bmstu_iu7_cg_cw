@@ -188,7 +188,8 @@ class MainView : View("MainWindow") {
                 val dy = it.y - pressedY
                 pressedY = it.y
                 pressedX = it.x
-
+                if (abs(dx) > 100.0 || abs(dy) > 100.0)
+                    return@setOnMouseDragged
                 if (!trans_of_model) {
                     if (transform_flags[0]) {
                         val move_params = Vector3(dx, -dy, 0.0)
@@ -199,6 +200,12 @@ class MainView : View("MainWindow") {
                         scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), rotate_params)
                         render.renderScene(scene1, visible)
                     }
+                }
+                if (handle_transform_flag) {
+                    for (v in scene1.models[0].poligons.vertices)
+                        if (v.selected)
+                            v.move(Vector3(dx, -dy, .0))
+                    render.renderScene(scene1, visible)
                 }
             }
 
