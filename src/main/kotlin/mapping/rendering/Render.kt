@@ -82,7 +82,7 @@ class Render (image: WritableImage) {
     private fun calculateFacetColor(facet: Facet, camera: Camera, screenCenter: Vector2D) : Color {
         val n = facet.getNormal(camera, screenCenter)
         val col = facet.color
-        val fraction = n.z
+        val fraction = abs(n.z)
         val red = (col.red * fraction * 255).toInt()
         val green = (col.green * fraction * 255).toInt()
         val blue = (col.blue * fraction * 255).toInt()
@@ -116,8 +116,6 @@ class Render (image: WritableImage) {
     }
 
     private fun renderFacet (facet: Facet, scene: Scene, screenCenter: Vector2D, visible: Boolean) {
-        val normal = facet.getNormal(scene.camera, screenCenter)
-        if (normal.z < 0) return
         val screenFacets = mutableListOf<Vector3>()
         for (v in facet.dots) {
             screenFacets += v.getScreenPos(scene.camera, screenCenter)
@@ -198,7 +196,8 @@ class Render (image: WritableImage) {
                         var c = Color.BLACK
                         if (ver.selected)
                             c = Color.BLUE
-
+                        if (ver.in_creating)
+                            c = Color.ORANGE
 
                         pw.setColor(x, height - y, c)
 

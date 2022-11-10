@@ -5,10 +5,13 @@ import javafx.geometry.Pos
 import javafx.scene.control.ToggleGroup
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
+import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import mapping.fileload.Chooser
 import mapping.fileload.FileManager
 import mapping.math.Vector3
+import mapping.objects.model.parts.Edge
+import mapping.objects.model.parts.Facet
 import mapping.objects.model.parts.Vertex
 import mapping.rendering.Render
 import tornadofx.*
@@ -148,10 +151,11 @@ class MainView : View("MainWindow") {
             imageview(wimage).apply {
 
                 this.setOnMousePressed {
-                    if (!trans_of_model) {
+                    if (!trans_of_model && !creation_flag) {
                         pressedX = it.x
                         pressedY = it.y
-                    } else {
+                    }
+                    else if (!creation_flag) {
                         full_not_selected()
                         if (trans_of_model_flag[0]) {
                             val p = find_nearest_dot(it.x, it.y)
@@ -202,15 +206,27 @@ class MainView : View("MainWindow") {
                         }
                         render.renderScene(scene1, visible)
                     }
+                    else if (creation_flag) {
+                        val p = find_nearest_dot(it.x, it.y)
+                        var col = 0
+                        for (v in scene1.models[0].poligons.vertices)
+                            if (v.in_creating)
+                                col++
+                        if (col < 3)
+                            scene1.models[0].poligons.vertices[p].in_creating = true
+                        render.renderScene(scene1, visible)
+                    }
                 }
 
                 this.setOnMouseDragged {
-                    val dx = it.x - pressedX
-                    val dy = it.y - pressedY
+                    var dx = it.x - pressedX
+                    var dy = it.y - pressedY
                     pressedY = it.y
                     pressedX = it.x
-                    if (abs(dx) > 100.0 || abs(dy) > 100.0)
-                        return@setOnMouseDragged
+                    if (dx > 100.0)
+                        dx = 100.0
+                    if (dy > 100)
+                        dy = 100.0
                     if (!trans_of_model) {
                         if (transform_flags[0]) {
                             val move_params = Vector3(dx, -dy, 0.0)
@@ -241,7 +257,6 @@ class MainView : View("MainWindow") {
                     Vector3(cenw, cenw, cenw),
                     Vector3(0.0, 0.0, 0.0)
                 )
-                scene1.models[0].poligons.setArithCenter()
                 render.renderScene(scene1, visible)
             }
             hboxConstraints {
@@ -601,31 +616,12 @@ class MainView : View("MainWindow") {
                 label { text = "Создание новых элементов" }
                 checkbox("Начать создание полигона").action {
                     creation_flag = !creation_flag
+                    if (!creation_flag)
+                        for (v in scene1.models[0].poligons.vertices)
+                            v.in_creating = false
+                    render.renderScene(scene1, visible)
                 }
 
-                vbox {
-                    togglebutton("Через 3 новые и 0 выбранных вершины", createPoligonToggleGroup).action {
-                        tooltip("Создать полигон через 3 новые вершины") { font = Font.font("Verdana") }
-                        create_poligon_flags[0] = true
-                        create_poligon_flags[1] = false
-                        create_poligon_flags[2] = false
-                    }
-                    togglebutton("Через 2 новые и 1 выбранную вершины", createPoligonToggleGroup
-                    ).action {
-                        tooltip("Создать полигон через 2 новые и 1 выбранную вершины") { font = Font.font("Verdana") }
-                        create_poligon_flags[0] = false
-                        create_poligon_flags[1] = true
-                        create_poligon_flags[2] = false
-                    }
-                    togglebutton("Через 1 новую и 2 выбранные вершины", createPoligonToggleGroup
-                    ).action {
-                        tooltip("Создать полигон через 1 новую и 2 выбранные вершины") { font = Font.font("Verdana") }
-                        create_poligon_flags[0] = false
-                        create_poligon_flags[1] = false
-                        create_poligon_flags[2] = true
-                    }
-                }
-                
                 var newx : Double? = 0.0
                 var newy : Double? = 0.0
                 var newz : Double? = 0.0
@@ -653,19 +649,65 @@ class MainView : View("MainWindow") {
                 }
 
                 button {
-                    this.text = "Создать"
+                    this.text = "Создать вершину"
                     action {
                         if (newx == null || newy == null || newz == null)
                             this.text = "Неверный ввод!"
                         else {
                             this.text = "Создать"
                             scene1.models[0].poligons.vertices += Vertex(Vector3(newx!!, newy!!, newz!!))
+                            scene1.models[0].poligons.vertices[scene1.models[0].poligons.vertices.size - 1].in_creating = true
                             render.renderScene(scene1, visible)
                         }
                     }
                 }
 
-
+                button {
+                    this.text = "Создать полигон"
+                    action {
+                        var col = 0
+                        for (v in scene1.models[0].poligons.vertices)
+                            if (v.in_creating)
+                                col++
+                        if (col != 3)
+                            this.text = "В полигоне должно быть 3 вершины!"
+                        else {
+                            this.text = "Создать"
+                            val dots = mutableListOf<Vertex>()
+                            for (v in scene1.models[0].poligons.vertices)
+                                if (v.in_creating) {
+                                    dots += v
+                                    v.in_creating = false
+                                }
+                            val edges = mutableListOf<Edge>()
+                            edges += Edge(dots[0], dots[1])
+                            edges += Edge(dots[2], dots[1])
+                            edges += Edge(dots[0], dots[2])
+                            val ar = Array(3) {true}
+                            for (v in scene1.models[0].poligons.vertices) {
+                                for (i in 0..2) {
+                                    if (dots[i] === v)
+                                        ar[i] = false
+                                }
+                            }
+                            val ar2 = Array(3) {true}
+                            for (e in scene1.models[0].poligons.edges) {
+                                for (i in 0..2) {
+                                    if ((e.id_p2 === edges[i].id_p1 && e.id_p1 === edges[i].id_p2) || (e.id_p1 === edges[i].id_p1 && e.id_p2 === edges[i].id_p2))
+                                        ar2[i] = false
+                                }
+                            }
+                            for (i in 0..2) {
+                                if (ar[i])
+                                    scene1.models[0].poligons.vertices += dots[i]
+                                if (ar2[i])
+                                    scene1.models[0].poligons.edges += edges[i]
+                            }
+                            scene1.models[0].poligons.facets += Facet(dots, edges, Color.WHITE)
+                            render.renderScene(scene1, visible)
+                        }
+                    }
+                }
             }
         }
     }

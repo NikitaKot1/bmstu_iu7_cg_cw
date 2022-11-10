@@ -14,6 +14,7 @@ class Vertex (pos: Vector3){
     var position = pos
     var transmatr = Matrix()
     var selected = false
+    var in_creating = false
     fun getNewPosition() : Vector3 {
         return transmatr * position
     }
