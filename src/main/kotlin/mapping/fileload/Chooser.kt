@@ -7,11 +7,12 @@ object Chooser {
     val chooser = JFileChooser()
     val filter = FileNameExtensionFilter("object files", "obj", "txt", "sol")
 
-    fun openFile() {
+    fun openFile() : String {
         chooser.fileFilter = filter
         val returnVal = chooser.showOpenDialog(null)
         if (returnVal == JFileChooser.APPROVE_OPTION)
             println(chooser.selectedFile.path)
+        return chooser.selectedFile.path
     }
 
     fun saveFile() : String {

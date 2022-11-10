@@ -1,5 +1,6 @@
 package mapping.fileload
 
+import javafx.scene.paint.Color
 import mapping.coord.Coord
 import mapping.math.Vector3
 import mapping.objects.camera.Camera
@@ -24,21 +25,22 @@ class Loader (fileName: String){
     }
 
     private fun readPosition(line: String, mul: Double) : Vector3 {
-        try {
-            val spl = line.split(' ')
+        val spl = line.split(' ')
+        if (spl.size == 4)
             return Vector3(spl[1].toDouble(), spl[2].toDouble(), spl[3].toDouble())
-        }
-        finally {
-        }
         return Vector3(.0, .0, .0)
     }
 
     private fun readFacetDetails(line: String) : List<Int> {
         val facetVert = mutableListOf<Int>()
         val spl = line.split(' ')
-        for (i in 1 until 4)
-            facetVert.add(spl[i].toInt() - 1)
-        //TODO: проверочку на 3 бы...
+        if (spl.size > 3) {
+            for (i in 1 until 4)
+                facetVert.add(spl[i].toInt() - 1)
+        }
+        if (spl.size == 7)
+            for (i in 4 until 7)
+                facetVert.add(spl[i].toInt())
         return facetVert
     }
 
@@ -93,7 +95,8 @@ class Loader (fileName: String){
                 val vertices = mutableListOf<Vertex>()
                 val facetEdges = mutableListOf<Edge>()
 
-                for (num in vNumbers) if (details != null) {
+                for (i in 0 until 3) if (details != null) {
+                    val num = vNumbers[i]
                     vertices += details.vertices[num - verticesRead]
                 }
                 for (i in 0 until vertices.size) {
@@ -102,6 +105,9 @@ class Loader (fileName: String){
                     facetEdges += e
                 }
                 val f = Facet(vertices, facetEdges)
+                if (vNumbers.size == 6) {
+                    f.color = Color.rgb(vNumbers[3], vNumbers[4], vNumbers[5])
+                }
                 details?.facets?.plusAssign(f)
             }
         }
@@ -150,7 +156,8 @@ class Loader (fileName: String){
                 val vertices = mutableListOf<Vertex>()
                 val facetEdges = mutableListOf<Edge>()
 
-                for (num in vNumbers) if (details != null) {
+                for (i in 0 until 3) if (details != null) {
+                    val num = vNumbers[i]
                     vertices += details.vertices[num - verticesRead]
                 }
                 for (i in 0 until vertices.size) {
@@ -159,7 +166,10 @@ class Loader (fileName: String){
                     facetEdges += e
                 }
                 val f = Facet(vertices, facetEdges)
-                //TODO: цвет?
+                if (vNumbers.size == 6) {
+                    f.color = Color.rgb(vNumbers[3], vNumbers[4], vNumbers[5])
+                }
+
                 details?.facets?.plusAssign(f)
             }
             else if (key == "ls") {
@@ -185,8 +195,14 @@ class Loader (fileName: String){
         if (light != null) {
             scene.lights = light
         }
+        else {
+            scene.lights = Light(Vertex(Vector3(.0, .0, .0)))
+        }
         if (camera != null) {
             scene.camera = camera
+        }
+        else {
+            scene.camera = Camera(Vertex(Vector3(.0, .0, .0)))
         }
         return scene
     }

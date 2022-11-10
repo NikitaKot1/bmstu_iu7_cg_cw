@@ -21,7 +21,7 @@ class MainView : View("MainWindow") {
     private val wimage = WritableImage(image.pixelReader, image.width.toInt(), image.height.toInt())
     val render = Render(wimage)
     val fileMan = FileManager()
-    var scene1 = fileMan.loadScene("/home/zorox/Документы/bmstu_iu7_cg_cw/src/main/resources/say1.sol", 200.0)
+    var scene1 = fileMan.loadScene(Chooser.openFile(), 200.0)
 
 
     val visible = Array(3) {true}
@@ -128,7 +128,6 @@ class MainView : View("MainWindow") {
         menubar {
             menu("File") {
                 item("Save", "Shortcut+S").action {
-                    println("Not done yet!")
                     fileMan.saveModel(Chooser.saveFile(), scene1.camera, scene1.models[0])
                 }
                 item("Open", "Shortcut+O").action {
@@ -368,6 +367,19 @@ class MainView : View("MainWindow") {
 
                     }
                 }
+
+                vbox {
+                    label { text = "Раскрасить грани" }
+                    colorpicker {
+                        this.setOnAction {
+                            for (f in scene1.models[0].poligons.facets)
+                                if (f.selected)
+                                    f.color = this.value
+                            render.renderScene(scene1, visible)
+                        }
+                    }
+                }
+
             }
 
             //новая колонка

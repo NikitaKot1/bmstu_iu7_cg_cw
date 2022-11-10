@@ -11,6 +11,7 @@ import tornadofx.Vector2D
 import java.util.Arrays
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 class Render (image: WritableImage) {
     val wimage = image
@@ -30,8 +31,8 @@ class Render (image: WritableImage) {
     }
 
     fun processPixel (p: Vector3, c: Color, visible: Boolean) {
-        val x = p.x.toInt()
-        val y = p.y.toInt()
+        val x = p.x.roundToInt()
+        val y = p.y.roundToInt()
        // println(y)
         if (x <= 0 || x >= width - 1)
             return

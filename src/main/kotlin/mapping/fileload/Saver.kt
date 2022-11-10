@@ -79,7 +79,10 @@ class Saver (fileName: String) {
             val v1 = vr[0] + 1
             val v2 = vr[1] + 1
             val v3 = vr[2] + 1
-            writedString += "f $v1 $v2 $v3\n"
+            val c1 = (f.color.red * 255).toInt()
+            val c2 = (f.color.green * 255).toInt()
+            val c3 = (f.color.blue * 255).toInt()
+            writedString += "f $v1 $v2 $v3 $c1 $c2 $c3\n"
         }
         file.writeText(writedString)
     }
