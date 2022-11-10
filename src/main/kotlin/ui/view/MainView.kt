@@ -9,6 +9,7 @@ import javafx.scene.text.Font
 import mapping.fileload.Chooser
 import mapping.fileload.FileManager
 import mapping.math.Vector3
+import mapping.objects.model.parts.Vertex
 import mapping.rendering.Render
 import tornadofx.*
 import java.awt.FileDialog
@@ -31,8 +32,12 @@ class MainView : View("MainWindow") {
     val trans_of_model_flag = Array(3) {false}
     private val transToggleCroup = ToggleGroup()
     private val transModelToggleGroup = ToggleGroup()
+    private val createPoligonToggleGroup = ToggleGroup()
+    val create_poligon_flags = Array(3) {false}
 
     private var handle_transform_flag = false
+
+    private var creation_flag = false
 
     private var p_edge_1 = -1
     private var p_facet_2 = -1
@@ -552,7 +557,8 @@ class MainView : View("MainWindow") {
                                     }
                                 }
                             }
-                            vbox {//TODO: спросить, что вообще с вращением граней и тд делать
+                            vbox {
+                                //TODO: спросить, что вообще с вращением граней и тд делать
                                 label { text = "Поворот" }
                                 textfield("0.0") {
                                     tooltip("Преобразование по X в градусах") { font = Font.font("Verdana") }
@@ -586,6 +592,80 @@ class MainView : View("MainWindow") {
                         }
                     }
                 }
+            }
+
+            //колонка созидания
+            vbox {
+                alignment = Pos.TOP_LEFT
+                spacing = 20.0
+                label { text = "Создание новых элементов" }
+                checkbox("Начать создание полигона").action {
+                    creation_flag = !creation_flag
+                }
+
+                vbox {
+                    togglebutton("Через 3 новые и 0 выбранных вершины", createPoligonToggleGroup).action {
+                        tooltip("Создать полигон через 3 новые вершины") { font = Font.font("Verdana") }
+                        create_poligon_flags[0] = true
+                        create_poligon_flags[1] = false
+                        create_poligon_flags[2] = false
+                    }
+                    togglebutton("Через 2 новые и 1 выбранную вершины", createPoligonToggleGroup
+                    ).action {
+                        tooltip("Создать полигон через 2 новые и 1 выбранную вершины") { font = Font.font("Verdana") }
+                        create_poligon_flags[0] = false
+                        create_poligon_flags[1] = true
+                        create_poligon_flags[2] = false
+                    }
+                    togglebutton("Через 1 новую и 2 выбранные вершины", createPoligonToggleGroup
+                    ).action {
+                        tooltip("Создать полигон через 1 новую и 2 выбранные вершины") { font = Font.font("Verdana") }
+                        create_poligon_flags[0] = false
+                        create_poligon_flags[1] = false
+                        create_poligon_flags[2] = true
+                    }
+                }
+                
+                var newx : Double? = 0.0
+                var newy : Double? = 0.0
+                var newz : Double? = 0.0
+
+                vbox {
+                    label { text = "Координаты новой точки" }
+                    textfield("0.0") {
+                        tooltip("Координата X") { font = Font.font("Verdana") }
+                        textProperty().addListener { obj, old, new ->
+                            newx = this.text.toDoubleOrNull()
+                        }
+                    }
+                    textfield("0.0") {
+                        tooltip("Координата Y") { font = Font.font("Verdana") }
+                        textProperty().addListener { obj, old, new ->
+                            newy = this.text.toDoubleOrNull()
+                        }
+                    }
+                    textfield("0.0") {
+                        tooltip("Координата Z") { font = Font.font("Verdana") }
+                        textProperty().addListener { obj, old, new ->
+                            newz = this.text.toDoubleOrNull()
+                        }
+                    }
+                }
+
+                button {
+                    this.text = "Создать"
+                    action {
+                        if (newx == null || newy == null || newz == null)
+                            this.text = "Неверный ввод!"
+                        else {
+                            this.text = "Создать"
+                            scene1.models[0].poligons.vertices += Vertex(Vector3(newx!!, newy!!, newz!!))
+                            render.renderScene(scene1, visible)
+                        }
+                    }
+                }
+
+
             }
         }
     }
