@@ -146,7 +146,6 @@ class MainView : View("MainWindow") {
                     val fln = Chooser.openFile()
                     if (fln == "0") {
                         WarningView("Ошибка при выборе файла!").openWindow()
-                        //fileMan.loadScene("/home/zorox/Документы/bmstu_iu7_cg_cw/src/main/resources/empty.sol", 200.0)
                     }
                     else {
                         scene1 = fileMan.loadScene(fln, 200.0)
@@ -164,7 +163,9 @@ class MainView : View("MainWindow") {
                         render.renderScene(scene1, visible)
                     }
                 }
-                item("Exit")
+                item("Exit").action {
+                    close()
+                }
             }
         }
         hbox {
