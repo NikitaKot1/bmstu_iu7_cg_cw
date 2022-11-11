@@ -10,16 +10,20 @@ object Chooser {
     fun openFile() : String {
         chooser.fileFilter = filter
         val returnVal = chooser.showOpenDialog(null)
-        if (returnVal == JFileChooser.APPROVE_OPTION)
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
             println(chooser.selectedFile.path)
-        return chooser.selectedFile.path
+            return chooser.selectedFile.path
+        }
+        return "0"
     }
 
     fun saveFile() : String {
         chooser.fileFilter = filter
         val returnVal = chooser.showSaveDialog(null)
-        if (returnVal == JFileChooser.APPROVE_OPTION)
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
             println(chooser.selectedFile.path)
-        return chooser.selectedFile.path
+            return chooser.selectedFile.path
+        }
+        return "0"
     }
 }

@@ -25,7 +25,7 @@ class MainView : View("MainWindow") {
     private val wimage = WritableImage(image.pixelReader, image.width.toInt(), image.height.toInt())
     val render = Render(wimage)
     val fileMan = FileManager()
-    var scene1 = fileMan.loadScene(Chooser.openFile(), 200.0)
+    var scene1 = fileMan.loadScene("/home/zorox/Документы/bmstu_iu7_cg_cw/src/main/resources/empty.sol", 200.0)
 
 
     val visible = Array(3) {true}
@@ -136,11 +136,33 @@ class MainView : View("MainWindow") {
         menubar {
             menu("File") {
                 item("Save", "Shortcut+S").action {
-                    fileMan.saveModel(Chooser.saveFile(), scene1.camera, scene1.models[0])
+                    val fln = Chooser.saveFile()
+                    if (fln == "0")
+                        WarningView("Ошибка при выборе файла!").openWindow()
+                    else
+                        fileMan.saveModel(fln, scene1.camera, scene1.models[0])
                 }
                 item("Open", "Shortcut+O").action {
-                    println("Not done yet!")
-                    Chooser.openFile()
+                    val fln = Chooser.openFile()
+                    if (fln == "0") {
+                        WarningView("Ошибка при выборе файла!").openWindow()
+                        //fileMan.loadScene("/home/zorox/Документы/bmstu_iu7_cg_cw/src/main/resources/empty.sol", 200.0)
+                    }
+                    else {
+                        scene1 = fileMan.loadScene(fln, 200.0)
+                        var cenw = wimage.width / 2
+                        val cenh = wimage.height / 2
+                        if (cenw > cenh)
+                            cenw = cenh
+                        cenw /= 2
+
+                        scene1.models[0].transform(
+                            Vector3(cenw * 2, cenw * 2, .0),
+                            Vector3(cenw, cenw, cenw),
+                            Vector3(0.0, 0.0, 0.0)
+                        )
+                        render.renderScene(scene1, visible)
+                    }
                 }
                 item("Exit")
             }

@@ -176,7 +176,6 @@ class Render (image: WritableImage) {
             //Грани
             for (facet in model.poligons.facets)
                 renderFacet(facet, scene, Vector2D(wimage.width / 2, wimage.height / 2), visible[0])
-
             for (edge in model.poligons.edges) {
                 var c = Color.BLACK
                 if (edge.selected)
@@ -186,7 +185,6 @@ class Render (image: WritableImage) {
                     edge.id_p2.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
                     c, visible[1])
             }
-
             if (visible[2]) {
                 for (ver in model.poligons.vertices) {
                     val screenPos = ver.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2))

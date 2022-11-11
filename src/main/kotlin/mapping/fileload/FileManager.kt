@@ -24,6 +24,5 @@ class FileManager {
         saver.createFile()
         saver.saveModel(model, camera)
         saver.closeFile()
-        //TODO: сам понимаешь, надо сделать когда-нибудь
     }
 }
