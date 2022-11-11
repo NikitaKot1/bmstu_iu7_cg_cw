@@ -151,82 +151,88 @@ class MainView : View("MainWindow") {
             imageview(wimage).apply {
 
                 this.setOnMousePressed {
-                    if (!trans_of_model && !creation_flag) {
-                        pressedX = it.x
-                        pressedY = it.y
+                    if (it.isSecondaryButtonDown) {
+                        val p = find_nearest_dot(it.x, it.y)
+                        val scr = scene1.models[0].poligons.vertices[p].getScreenPos(scene1.camera, Vector2D(.0, .0))
+                        val px = scr.x
+                        val py = scr.y
+                        val pz = scr.z
+                        InfoView("X = $px\nY = $py\nZ = $pz").openWindow()
                     }
-                    else if (!creation_flag) {
-                        full_not_selected()
-                        if (trans_of_model_flag[0]) {
-                            val p = find_nearest_dot(it.x, it.y)
-                            scene1.models[0].poligons.vertices[p].selected = true
-                            render.renderScene(scene1, visible)
-                        } else if (trans_of_model_flag[1]) {
-                            val p = find_nearest_dot(it.x, it.y)
-                            if (p_edge_1 == -1) {
-                                p_edge_1 = p
+                    if (it.isPrimaryButtonDown) {
+                        if (trans_of_model) {
+                            full_not_selected()
+                            if (trans_of_model_flag[0]) {
+                                val p = find_nearest_dot(it.x, it.y)
                                 scene1.models[0].poligons.vertices[p].selected = true
-                            } else {
-                                scene1.models[0].poligons.vertices[p].selected = true
-                                e_facet_1 = find_edge_for_v(p, p_edge_1)
-                                if (e_facet_1 == -1) {
-                                    p_edge_1 = -1
-                                }
-                                e_facet_1 = -1
-                            }
-                            render.renderScene(scene1, visible)
-                        } else if (trans_of_model_flag[2]) {
-                            val p = find_nearest_dot(it.x, it.y)
-                            if (p_edge_1 == -1) {
-                                p_edge_1 = p
-                                scene1.models[0].poligons.vertices[p].selected = true
-                            } else if (p_facet_2 == -1) {
-                                p_facet_2 = p
-                                scene1.models[0].poligons.vertices[p].selected = true
-                                e_facet_1 = find_edge_for_v(p, p_edge_1)
-                                if (e_facet_1 == -1) {
-                                    p_edge_1 = -1
-                                }
-                            } else {
-                                scene1.models[0].poligons.vertices[p].selected = true
-                                e_facet_2 = find_edge_for_v(p, p_facet_2)
-                                if (e_facet_2 == -1) {
-                                    p_edge_1 = -1
-                                    e_facet_1 = -1
-                                    p_facet_2 = -1
+                                render.renderScene(scene1, visible)
+                            } else if (trans_of_model_flag[1]) {
+                                val p = find_nearest_dot(it.x, it.y)
+                                if (p_edge_1 == -1) {
+                                    p_edge_1 = p
+                                    scene1.models[0].poligons.vertices[p].selected = true
                                 } else {
-                                    val fac = find_facet_for_e(e_facet_1, e_facet_2)
-                                    if (fac == -1) {
+                                    scene1.models[0].poligons.vertices[p].selected = true
+                                    e_facet_1 = find_edge_for_v(p, p_edge_1)
+                                    if (e_facet_1 == -1) {
+                                        p_edge_1 = -1
+                                    }
+                                    e_facet_1 = -1
+                                }
+                                render.renderScene(scene1, visible)
+                            } else if (trans_of_model_flag[2]) {
+                                val p = find_nearest_dot(it.x, it.y)
+                                if (p_edge_1 == -1) {
+                                    p_edge_1 = p
+                                    scene1.models[0].poligons.vertices[p].selected = true
+                                } else if (p_facet_2 == -1) {
+                                    p_facet_2 = p
+                                    scene1.models[0].poligons.vertices[p].selected = true
+                                    e_facet_1 = find_edge_for_v(p, p_edge_1)
+                                    if (e_facet_1 == -1) {
+                                        p_edge_1 = -1
+                                    }
+                                } else {
+                                    scene1.models[0].poligons.vertices[p].selected = true
+                                    e_facet_2 = find_edge_for_v(p, p_facet_2)
+                                    if (e_facet_2 == -1) {
                                         p_edge_1 = -1
                                         e_facet_1 = -1
                                         p_facet_2 = -1
+                                    } else {
+                                        val fac = find_facet_for_e(e_facet_1, e_facet_2)
+                                        if (fac == -1) {
+                                            p_edge_1 = -1
+                                            e_facet_1 = -1
+                                            p_facet_2 = -1
+                                        }
                                     }
                                 }
                             }
+                            render.renderScene(scene1, visible)
+                        } else if (creation_flag) {
+                            val p = find_nearest_dot(it.x, it.y)
+                            var col = 0
+                            for (v in scene1.models[0].poligons.vertices)
+                                if (v.in_creating)
+                                    col++
+                            if (col < 3)
+                                scene1.models[0].poligons.vertices[p].in_creating = true
+                            render.renderScene(scene1, visible)
                         }
-                        render.renderScene(scene1, visible)
-                    }
-                    else if (creation_flag) {
-                        val p = find_nearest_dot(it.x, it.y)
-                        var col = 0
-                        for (v in scene1.models[0].poligons.vertices)
-                            if (v.in_creating)
-                                col++
-                        if (col < 3)
-                            scene1.models[0].poligons.vertices[p].in_creating = true
-                        render.renderScene(scene1, visible)
                     }
                 }
 
+                this.setOnMouseDragReleased {
+                    pressedX = it.x
+                    pressedY = it.y
+                }
+
                 this.setOnMouseDragged {
-                    var dx = it.x - pressedX
-                    var dy = it.y - pressedY
+                    val dx = it.x - pressedX
+                    val dy = it.y - pressedY
                     pressedY = it.y
                     pressedX = it.x
-                    if (dx > 100.0)
-                        dx = 100.0
-                    if (dy > 100)
-                        dy = 100.0
                     if (!trans_of_model) {
                         if (transform_flags[0]) {
                             val move_params = Vector3(dx, -dy, 0.0)
@@ -399,7 +405,6 @@ class MainView : View("MainWindow") {
                         }
                     }
                 }
-
             }
 
             //новая колонка
@@ -514,9 +519,8 @@ class MainView : View("MainWindow") {
                             this.text = "Переместить"
                             action {
                                 if (move_x == null || move_y == null || move_z == null)
-                                    this.text = "Неверный ввод!"
+                                    WarningView("Неверный ввод!").openWindow()
                                 else {
-                                    this.text = "Переместить"
                                     //text("Преобразовать" )
                                     scene1.models[0].transform(
                                         Vector3(move_x!!, move_y!!, move_z!!),
@@ -561,9 +565,8 @@ class MainView : View("MainWindow") {
                                     this.text = "Преобразовать"
                                     action {
                                         if (move_x == null || move_y == null || move_z == null)
-                                            this.text = "Неверный ввод!"
+                                            WarningView("Неверный ввод!").openWindow()
                                         else {
-                                            this.text = "Преобразовать"
                                             for (v in scene1.models[0].poligons.vertices)
                                                 if (v.selected)
                                                     v.move(Vector3(move_x!!, move_y!!, move_z!!))
@@ -652,9 +655,8 @@ class MainView : View("MainWindow") {
                     this.text = "Создать вершину"
                     action {
                         if (newx == null || newy == null || newz == null)
-                            this.text = "Неверный ввод!"
+                            WarningView("Неверный ввод!").openWindow()
                         else {
-                            this.text = "Создать"
                             scene1.models[0].poligons.vertices += Vertex(Vector3(newx!!, newy!!, newz!!))
                             scene1.models[0].poligons.vertices[scene1.models[0].poligons.vertices.size - 1].in_creating = true
                             render.renderScene(scene1, visible)
@@ -670,9 +672,8 @@ class MainView : View("MainWindow") {
                             if (v.in_creating)
                                 col++
                         if (col != 3)
-                            this.text = "В полигоне должно быть 3 вершины!"
+                            WarningView("В полигоне должно быть 3 вершины!").openWindow()
                         else {
-                            this.text = "Создать"
                             val dots = mutableListOf<Vertex>()
                             for (v in scene1.models[0].poligons.vertices)
                                 if (v.in_creating) {
