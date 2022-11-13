@@ -17,6 +17,7 @@ import mapping.rendering.Render
 import tornadofx.*
 import java.awt.FileDialog
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -35,12 +36,11 @@ class MainView : View("MainWindow") {
     val trans_of_model_flag = Array(3) {false}
     private val transToggleCroup = ToggleGroup()
     private val transModelToggleGroup = ToggleGroup()
-    private val createPoligonToggleGroup = ToggleGroup()
-    val create_poligon_flags = Array(3) {false}
 
     private var handle_transform_flag = false
 
     private var creation_flag = false
+    private var deleting_flag = false
 
     private var p_edge_1 = -1
     private var p_facet_2 = -1
@@ -49,7 +49,6 @@ class MainView : View("MainWindow") {
 
     var pressedX = 0.0
     var pressedY = 0.0
-
 
     private fun torad(rad: Double) :Double {
         return rad / 180 * 3.14
@@ -163,6 +162,9 @@ class MainView : View("MainWindow") {
                         render.renderScene(scene1, visible)
                     }
                 }
+                item("New file", "Shortcut+N").action {
+                    NewFileView(scene1, fileMan).openWindow()
+                }
                 item("Exit").action {
                     close()
                 }
@@ -173,7 +175,7 @@ class MainView : View("MainWindow") {
             spacing = 20.0
             imageview(wimage).apply {
 
-                this.setOnMousePressed {
+                this.setOnMousePressed{
                     if (it.isSecondaryButtonDown) {
                         val p = find_nearest_dot(it.x, it.y)
                         val scr = scene1.models[0].poligons.vertices[p].getScreenPos(scene1.camera, Vector2D(.0, .0))
@@ -244,11 +246,15 @@ class MainView : View("MainWindow") {
                             render.renderScene(scene1, visible)
                         }
                     }
+                    else {
+                        pressedX = it.x
+                        pressedY = it.y
+                    }
                 }
-
-                this.setOnMouseDragReleased {
+                this.setOnMousePressed {
                     pressedX = it.x
                     pressedY = it.y
+                    println("r: $pressedX $pressedY")
                 }
 
                 this.setOnMouseDragged {
@@ -262,7 +268,7 @@ class MainView : View("MainWindow") {
                             scene1.models[0].transform(move_params, Vector3(1.0, 1.0, 1.0), Vector3(0.0, 0.0, 0.0))
                             render.renderScene(scene1, visible)
                         } else if (transform_flags[1]) {
-                            val rotate_params = Vector3(-torad(dy) * 0.1, -torad(dx) * 0.1, 0.0)
+                            val rotate_params = Vector3(-dy * 0.001, -dx * 0.001, 0.0)
                             scene1.models[0].transform(Vector3(0.0, 0.0, 0.0), Vector3(1.0, 1.0, 1.0), rotate_params)
                             render.renderScene(scene1, visible)
                         }
@@ -731,6 +737,66 @@ class MainView : View("MainWindow") {
                             render.renderScene(scene1, visible)
                         }
                     }
+                }
+
+                checkbox("Удаление полигона").action {
+                    deleting_flag = !deleting_flag
+                }
+                button ("Удалить полигон").action {
+                    println("start")
+                    var p = -1
+                    for (f in 0 until scene1.models[0].poligons.facets.size)
+                        if (scene1.models[0].poligons.facets[f].selected) {
+                            p = f
+                            break
+                        }
+                    if (p != -1) {
+                        val dots = scene1.models[0].poligons.facets[p].dots
+                        val edges = scene1.models[0].poligons.facets[p].edges
+                        scene1.models[0].poligons.facets.removeAt(p)
+                        val dp = Array(3){-1}
+                        val ep = Array(3){-1}
+                        for (i in 0..2) {
+                            for (e in 0 until scene1.models[0].poligons.edges.size)
+                                if (edges[i] === scene1.models[0].poligons.edges[e])
+                                    ep[i] = e
+                            for (v in 0 until scene1.models[0].poligons.vertices.size)
+                                if (dots[i] === scene1.models[0].poligons.vertices[v])
+                                    dp[i] = v
+                        }
+                        for (k in 0..2) {
+                            for (f in scene1.models[0].poligons.facets) {
+                                for (e in f.edges)
+                                    if (e === edges[k])
+                                        ep[k] = -1
+                                for (d in f.dots)
+                                    if (d === dots[k])
+                                        dp[k] = -1
+                                if (ep[k] == -1 && dp[k] == -1)
+                                    break
+                            }
+                        }
+                        var mmep = max(ep[0], max(ep[1], ep[2]))
+                        while (mmep != -1) {
+                            scene1.models[0].poligons.edges.removeAt(mmep)
+                            for (e in ep.indices)
+                                if (ep[e] == mmep)
+                                    ep[e] = -1
+                            mmep = max(ep[0], max(ep[1], ep[2]))
+                        }
+                        var mmvp = max(dp[0], max(dp[1], dp[2]))
+                        while (mmvp != -1) {
+                            scene1.models[0].poligons.vertices.removeAt(mmvp)
+                            for (d in dp.indices)
+                                if (dp[d] == mmvp)
+                                    dp[d] = -1
+                            mmvp = max(dp[0], max(dp[1], dp[2]))
+                        }
+                        full_not_selected()
+                        render.renderScene(scene1, visible)
+                    }
+                    else
+                        WarningView("Выберите полигон!").openWindow()
                 }
             }
         }
