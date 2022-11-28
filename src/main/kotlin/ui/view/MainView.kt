@@ -176,6 +176,7 @@ class MainView : View("MainWindow") {
             imageview(wimage).apply {
 
                 this.setOnMousePressed{
+
                     if (it.isSecondaryButtonDown) {
                         val p = find_nearest_dot(it.x, it.y)
                         val scr = scene1.models[0].poligons.vertices[p].getScreenPos(scene1.camera, Vector2D(.0, .0))
@@ -246,15 +247,8 @@ class MainView : View("MainWindow") {
                             render.renderScene(scene1, visible)
                         }
                     }
-                    else {
-                        pressedX = it.x
-                        pressedY = it.y
-                    }
-                }
-                this.setOnMousePressed {
                     pressedX = it.x
                     pressedY = it.y
-                    println("r: $pressedX $pressedY")
                 }
 
                 this.setOnMouseDragged {
@@ -305,7 +299,7 @@ class MainView : View("MainWindow") {
                     alignment = Pos.CENTER
                     spacing = 10.0
                     run {
-                        label { text = "Верчение" }
+                        label { text = "Поворот" }
                         button {
                             text = "вверх"
                             action {
@@ -322,7 +316,7 @@ class MainView : View("MainWindow") {
                             alignment = Pos.CENTER
                             spacing = 10.0
                             button {
-                                text = "влево"
+                                text = "влево "
                                 action {
                                     val k = torad(10.0)
                                     scene1.models[0].transform(
@@ -347,7 +341,7 @@ class MainView : View("MainWindow") {
                             }
                         }
                         button {
-                            text = "вниз"
+                            text = " вниз "
                             action {
                                 val k = torad(10.0)
                                 scene1.models[0].transform(
@@ -460,7 +454,8 @@ class MainView : View("MainWindow") {
                             alignment = Pos.CENTER
                             spacing = 10.0
                             button {
-                                text = "влево"
+
+                                text = "влево "
                                 action {
                                     scene1.models[0].transform(
                                         Vector3(-10.0, 0.0, 0.0),
@@ -483,7 +478,7 @@ class MainView : View("MainWindow") {
                             }
                         }
                         button {
-                            text = "вниз"
+                            text = " вниз "
                             action {
                                 scene1.models[0].transform(
                                     Vector3(0.0, -10.0, 0.0),
@@ -604,28 +599,28 @@ class MainView : View("MainWindow") {
                                     }
                                 }
                             }
-                            vbox {
-                                //TODO: спросить, что вообще с вращением граней и тд делать
-                                label { text = "Поворот" }
-                                textfield("0.0") {
-                                    tooltip("Преобразование по X в градусах") { font = Font.font("Verdana") }
-                                    textProperty().addListener { obj, old, new ->
-                                        rotate_x = this.text.toDoubleOrNull()
-                                    }
-                                }
-                                textfield("0.0") {
-                                    tooltip("Преобразование по Y в градусах") { font = Font.font("Verdana") }
-                                    textProperty().addListener { obj, old, new ->
-                                        rotate_y = this.text.toDoubleOrNull()
-                                    }
-                                }
-                                textfield("0.0") {
-                                    tooltip("Преобразование по Z в градусах") { font = Font.font("Verdana") }
-                                    textProperty().addListener { obj, old, new ->
-                                        rotate_z = this.text.toDoubleOrNull()
-                                    }
-                                }
-                            }
+//                            vbox {
+//                                //TODO: спросить, что вообще с вращением граней и тд делать
+//                                label { text = "Поворот" }
+//                                textfield("0.0") {
+//                                    tooltip("Преобразование по X в градусах") { font = Font.font("Verdana") }
+//                                    textProperty().addListener { obj, old, new ->
+//                                        rotate_x = this.text.toDoubleOrNull()
+//                                    }
+//                                }
+//                                textfield("0.0") {
+//                                    tooltip("Преобразование по Y в градусах") { font = Font.font("Verdana") }
+//                                    textProperty().addListener { obj, old, new ->
+//                                        rotate_y = this.text.toDoubleOrNull()
+//                                    }
+//                                }
+//                                textfield("0.0") {
+//                                    tooltip("Преобразование по Z в градусах") { font = Font.font("Verdana") }
+//                                    textProperty().addListener { obj, old, new ->
+//                                        rotate_z = this.text.toDoubleOrNull()
+//                                    }
+//                                }
+//                            }
                         }
                         vbox {
                             alignment = Pos.CENTER

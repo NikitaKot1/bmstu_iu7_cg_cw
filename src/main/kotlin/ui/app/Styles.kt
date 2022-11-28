@@ -1,10 +1,7 @@
 package ui.app
 
 import javafx.scene.text.FontWeight
-import tornadofx.Stylesheet
-import tornadofx.box
-import tornadofx.cssclass
-import tornadofx.px
+import tornadofx.*
 
 class Styles : Stylesheet() {
     companion object {
@@ -13,15 +10,27 @@ class Styles : Stylesheet() {
 
     init {
         label and heading {
-            padding = box(10.px)
-            fontSize = 20.px
+            padding = box(40.px)
+            fontSize = 30.px
             fontWeight = FontWeight.BOLD
 
         }
+        label {
+            fontSize = 16.px
+        }
         button {
-            padding = box(20.px)
-            fontSize = 10.px
+            padding = box(15.px)
+            fontSize = 15.px
             fontWeight = FontWeight.BOLD
+        }
+//        toggleButton {
+//            fontSize = 12.px
+//        }
+//        checkBox {
+//            fontSize = 12.px
+//        }
+        s(toggleButton, checkBox, textField) {
+            fontSize = 15.px
         }
     }
 }
