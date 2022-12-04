@@ -23,12 +23,6 @@ class Styles : Stylesheet() {
             fontSize = 15.px
             fontWeight = FontWeight.BOLD
         }
-//        toggleButton {
-//            fontSize = 12.px
-//        }
-//        checkBox {
-//            fontSize = 12.px
-//        }
         s(toggleButton, checkBox, textField) {
             fontSize = 15.px
         }

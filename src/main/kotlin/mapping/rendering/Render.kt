@@ -8,7 +8,6 @@ import mapping.objects.camera.Camera
 import mapping.objects.model.parts.Facet
 import mapping.scene.Scene
 import tornadofx.Vector2D
-import java.util.Arrays
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -174,17 +173,24 @@ class Render (image: WritableImage) {
 
         for (model in scene.models) {
             //Грани
+
+            val begin = System.nanoTime()
             for (facet in model.poligons.facets)
                 renderFacet(facet, scene, Vector2D(wimage.width / 2, wimage.height / 2), visible[0])
-            for (edge in model.poligons.edges) {
-                var c = Color.BLACK
-                if (edge.selected)
-                    c = Color.BLUE
-                processLine(
-                    edge.id_p1.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
-                    edge.id_p2.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
-                    c, visible[1])
-            }
+            val end = System.nanoTime()
+            val st = end - begin
+            println("render: $st")
+
+            if (visible[1])
+                for (edge in model.poligons.edges) {
+                    var c = Color.BLACK
+                    if (edge.selected)
+                        c = Color.BLUE
+                    processLine(
+                        edge.id_p1.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
+                        edge.id_p2.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2)),
+                        c, visible[1])
+                }
             if (visible[2]) {
                 for (ver in model.poligons.vertices) {
                     val screenPos = ver.getScreenPos(scene.camera, Vector2D(wimage.width / 2, wimage.height / 2))

@@ -40,7 +40,6 @@ class MainView : View("MainWindow") {
     private var handle_transform_flag = false
 
     private var creation_flag = false
-    private var deleting_flag = false
 
     private var p_edge_1 = -1
     private var p_facet_2 = -1
@@ -153,7 +152,7 @@ class MainView : View("MainWindow") {
                         if (cenw > cenh)
                             cenw = cenh
                         cenw /= 2
-
+                        cenw = 175.0
                         scene1.models[0].transform(
                             Vector3(cenw * 2, cenw * 2, .0),
                             Vector3(cenw, cenw, cenw),
@@ -256,6 +255,7 @@ class MainView : View("MainWindow") {
                     val dy = it.y - pressedY
                     pressedY = it.y
                     pressedX = it.x
+                    println("$dx; $dy")
                     if (!trans_of_model) {
                         if (transform_flags[0]) {
                             val move_params = Vector3(dx, -dy, 0.0)
@@ -281,6 +281,7 @@ class MainView : View("MainWindow") {
                     cenw = cenh
                 cenw /= 2
 
+                cenw = 10.0
                 scene1.models[0].transform(
                     Vector3(cenw * 2, cenw * 2, .0),
                     Vector3(cenw, cenw, cenw),
@@ -734,9 +735,6 @@ class MainView : View("MainWindow") {
                     }
                 }
 
-                checkbox("Удаление полигона").action {
-                    deleting_flag = !deleting_flag
-                }
                 button ("Удалить полигон").action {
                     println("start")
                     var p = -1
