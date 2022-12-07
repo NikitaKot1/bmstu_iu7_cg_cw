@@ -19,6 +19,8 @@
 \geometry{top=20mm}
 \geometry{bottom=20mm}
 
+\setlength{\parindent}{1.25cm} % для шрифта 14pt
+
 \usepackage{titlesec}
 \titleformat{\section}
 	{\normalsize\bfseries}
@@ -87,3 +89,7 @@
 \addto\captionsrussian{\def\refname{Список используемых источников}}
 
 \newcommand{\code}[1]{\texttt{#1}}
+
+\makeatletter
+\renewcommand{\@biblabel}[1]{#1. \hfill}
+\makeatother

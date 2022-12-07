@@ -152,7 +152,6 @@ class MainView : View("MainWindow") {
                         if (cenw > cenh)
                             cenw = cenh
                         cenw /= 2
-                        cenw = 175.0
                         scene1.models[0].transform(
                             Vector3(cenw * 2, cenw * 2, .0),
                             Vector3(cenw, cenw, cenw),
